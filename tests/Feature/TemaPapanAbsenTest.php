@@ -94,3 +94,11 @@ test('nav bawah memakai pil geser dan sheet lainnya', function () {
         ->and($ortu)
         ->toContain('translateX(');
 });
+
+test('jempol scrollbar tidak bergaris warna latar di sidebar gelap', function () {
+    $css = file_get_contents(resource_path('css/app.css'));
+
+    expect($css)
+        ->toContain('background-clip: padding-box;')
+        ->not->toContain('border: 3px solid var(--g-bg);');
+});

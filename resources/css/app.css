@@ -361,7 +361,10 @@
 
     ::-webkit-scrollbar-thumb {
         background: color-mix(in srgb, var(--g-ink-2) 35%, transparent);
-        border: 3px solid var(--g-bg);
+        /* Border transparan, bukan warna latar: di sidebar gelap warna kertas
+           muncul sebagai garis putih di sekeliling jempol. */
+        border: 3px solid transparent;
+        background-clip: padding-box;
         border-radius: 999px;
     }
 
