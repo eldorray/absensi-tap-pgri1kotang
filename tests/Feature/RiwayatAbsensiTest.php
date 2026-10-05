@@ -6,6 +6,7 @@ use App\Enums\TipeIzin;
 use App\Enums\TipeTap;
 use App\Models\Absensi;
 use App\Models\AbsensiAttempt;
+use App\Models\AbsensiKelas;
 use App\Models\Izin;
 use App\Models\User;
 use Database\Seeders\JadwalKerjaSeeder;
@@ -127,4 +128,15 @@ test('tanda tanpa biometrik hanya untuk pengguna yang memasang passkey', functio
 
 test('tamu tidak dapat membuka riwayat absensi', function () {
     $this->get(route('riwayat.index'))->assertRedirect(route('login'));
+});
+
+test('riwayat guru memuat telat masuk kelas bulan itu', function () {
+    $this->seed(JadwalKerjaSeeder::class);
+    $guru = User::factory()->create();
+    AbsensiKelas::factory()->telat(6)->create(['user_id' => $guru->id, 'tanggal' => '2026-09-03']);
+
+    $this->actingAs($guru)->get(route('riwayat.index'))
+        ->assertInertia(fn ($page) => $page
+            ->where('ringkasan.telat_kelas', 1)
+            ->where('ringkasan.menit_telat_kelas', 6));
 });

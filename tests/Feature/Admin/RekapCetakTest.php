@@ -4,6 +4,7 @@ use App\Actions\Absensi\RekapBulanan;
 use App\Enums\StatusIzin;
 use App\Enums\TipeIzin;
 use App\Models\Absensi;
+use App\Models\AbsensiKelas;
 use App\Models\HariLibur;
 use App\Models\Izin;
 use App\Models\JadwalKerja;
@@ -207,4 +208,15 @@ test('laporan cetak memuat kolom izin, sakit, cuti, dan alfa seperti ringkasan l
             '<td class="angka">0</td>',
             '<td class="angka">2</td>',
         ], false);
+});
+
+test('laporan cetak memuat kolom telat masuk kelas', function () {
+    $guru = User::factory()->create();
+    AbsensiKelas::factory()->telat(4)->create(['user_id' => $guru->id, 'tanggal' => '2026-09-01']);
+
+    $this->actingAs(User::factory()->admin()->create())
+        ->get(route('admin.rekap.cetak', ['tahun' => 2026, 'bulan' => 9]))
+        ->assertOk()
+        ->assertSee('Telat kelas')
+        ->assertSee('4 menit');
 });

@@ -108,6 +108,8 @@ class RiwayatAbsensiController extends Controller
                 'hadir' => $ringkasan[StatusHari::Hadir->value] ?? 0,
                 'terlambat' => $baris['terlambat'],
                 'menit_terlambat' => $baris['menit_terlambat'],
+                'telat_kelas' => $baris['telat_kelas'],
+                'menit_telat_kelas' => $baris['menit_telat_kelas'],
                 'izin' => $ringkasan[StatusHari::Izin->value] ?? 0,
                 'sakit' => $ringkasan[StatusHari::Sakit->value] ?? 0,
                 'cuti' => $ringkasan[StatusHari::Cuti->value] ?? 0,

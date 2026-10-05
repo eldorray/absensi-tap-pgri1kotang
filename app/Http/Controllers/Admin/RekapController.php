@@ -106,7 +106,7 @@ class RekapController extends Controller
             fwrite($keluaran, "\xEF\xBB\xBF");
 
             if ($periode) {
-                fputcsv($keluaran, ['NIP', 'Nama', 'Hari efektif', 'Hadir', 'Terlambat', 'Menit terlambat', 'Izin', 'Sakit', 'Cuti', 'Alfa', '% Kehadiran']);
+                fputcsv($keluaran, ['NIP', 'Nama', 'Hari efektif', 'Hadir', 'Terlambat', 'Menit terlambat', 'Telat kelas', 'Menit telat kelas', 'Izin', 'Sakit', 'Cuti', 'Alfa', '% Kehadiran']);
 
                 foreach ($rekap['baris'] as $baris) {
                     fputcsv($keluaran, [
@@ -116,6 +116,8 @@ class RekapController extends Controller
                         $baris['ringkasan']['hadir'] ?? 0,
                         $baris['terlambat'],
                         $baris['menit_terlambat'],
+                        $baris['telat_kelas'],
+                        $baris['menit_telat_kelas'],
                         $baris['ringkasan']['izin'] ?? 0,
                         $baris['ringkasan']['sakit'] ?? 0,
                         $baris['ringkasan']['cuti'] ?? 0,
@@ -124,13 +126,15 @@ class RekapController extends Controller
                     ]);
                 }
             } else {
-                fputcsv($keluaran, ['NIP', 'Nama', ...$rekap['tanggals']]);
+                fputcsv($keluaran, ['NIP', 'Nama', ...$rekap['tanggals'], 'Telat kelas', 'Menit telat kelas']);
 
                 foreach ($rekap['baris'] as $baris) {
                     fputcsv($keluaran, [
                         $baris['nip'] ?? '',
                         $baris['nama'],
                         ...array_map(fn (array $hari): string => $hari['label'], $baris['hari']),
+                        $baris['telat_kelas'],
+                        $baris['menit_telat_kelas'],
                     ]);
                 }
             }

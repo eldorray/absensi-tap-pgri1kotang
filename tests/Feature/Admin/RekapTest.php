@@ -7,6 +7,7 @@ use App\Enums\TipeIzin;
 use App\Enums\TipeTap;
 use App\Models\Absensi;
 use App\Models\AbsensiAttempt;
+use App\Models\AbsensiKelas;
 use App\Models\HariLibur;
 use App\Models\Izin;
 use App\Models\Kantor;
@@ -238,4 +239,30 @@ test('rekap semua guru tidak memuat admin, rekap satu orang tetap memuat admin',
     expect(array_column($semua['baris'], 'user_id'))->toBe([$guru->id])
         ->and($satu['baris'])->toHaveCount(1)
         ->and($satu['baris'][0]['user_id'])->toBe($admin->id);
+});
+
+test('rekap menghitung telat masuk kelas per guru', function () {
+    $guru = User::factory()->create();
+    AbsensiKelas::factory()->telat(5)->create(['user_id' => $guru->id, 'tanggal' => '2026-09-01']);
+    AbsensiKelas::factory()->telat(3)->create(['user_id' => $guru->id, 'tanggal' => '2026-09-02']);
+    AbsensiKelas::factory()->create(['user_id' => $guru->id, 'tanggal' => '2026-09-03']);
+    AbsensiKelas::factory()->telat(9)->create(['user_id' => $guru->id, 'tanggal' => '2026-10-01']);
+
+    $baris = app(RekapBulanan::class)(2026, 9, $guru->id)['baris'][0];
+
+    expect($baris['telat_kelas'])->toBe(2)
+        ->and($baris['menit_telat_kelas'])->toBe(8);
+});
+
+test('CSV periode memuat kolom telat kelas', function () {
+    $guru = User::factory()->create(['name' => 'Bu Aminah']);
+    AbsensiKelas::factory()->telat(5)->create(['user_id' => $guru->id, 'tanggal' => '2026-09-01']);
+    AbsensiKelas::factory()->telat(3)->create(['user_id' => $guru->id, 'tanggal' => '2026-09-02']);
+
+    $isi = $this->actingAs(User::factory()->admin()->create())
+        ->get(route('admin.rekap.export', ['mode' => 'periode', 'mulai' => '2026-09-01', 'selesai' => '2026-09-30']))
+        ->streamedContent();
+
+    expect($isi)->toContain('"Telat kelas","Menit telat kelas"')
+        ->and($isi)->toContain(',0,0,2,8,');
 });

@@ -42,6 +42,8 @@
             hadir: number;
             terlambat: number;
             menit_terlambat: number;
+            telat_kelas: number;
+            menit_telat_kelas: number;
             izin: number;
             sakit: number;
             cuti: number;
@@ -197,6 +199,19 @@
                     {ringkasan.alfa}
                 </dd>
             </div>
+            {#if ringkasan.telat_kelas > 0}
+                <div class="col-span-2 rounded-2xl bg-muted/70 p-3">
+                    <dt class="text-xs text-muted-foreground">
+                        Telat masuk kelas
+                    </dt>
+                    <dd class="mt-1 font-semibold tabular-nums">
+                        {ringkasan.telat_kelas}
+                        <span class="text-xs font-normal text-muted-foreground"
+                            >· {ringkasan.menit_telat_kelas} menit</span
+                        >
+                    </dd>
+                </div>
+            {/if}
         </dl>
     </section>
 

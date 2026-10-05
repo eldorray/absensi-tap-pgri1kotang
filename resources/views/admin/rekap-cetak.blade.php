@@ -67,6 +67,8 @@
                 <th class="angka">Absen pulang</th>
                 <th class="angka">Terlambat</th>
                 <th class="angka">Menit terlambat</th>
+                <th class="angka">Telat kelas</th>
+                <th class="angka">Menit telat kelas</th>
                 <th class="angka">Izin</th>
                 <th class="angka">Sakit</th>
                 <th class="angka">Cuti</th>
@@ -86,6 +88,8 @@
                     <td class="angka">{{ $b['pulang'] }}</td>
                     <td class="angka">{{ $b['terlambat'] }}</td>
                     <td class="angka">{{ $b['menit_terlambat'] }} menit</td>
+                    <td class="angka">{{ $b['telat_kelas'] }}</td>
+                    <td class="angka">{{ $b['menit_telat_kelas'] }} menit</td>
                     <td class="angka">{{ $b['ringkasan']['izin'] ?? 0 }}</td>
                     <td class="angka">{{ $b['ringkasan']['sakit'] ?? 0 }}</td>
                     <td class="angka">{{ $b['ringkasan']['cuti'] ?? 0 }}</td>
@@ -93,7 +97,7 @@
                     <td class="angka">{{ number_format($b['persentase'], 2, ',', '.') }}%</td>
                 </tr>
             @empty
-                <tr><td colspan="14">Belum ada akun guru pada tahun ajaran ini.</td></tr>
+                <tr><td colspan="16">Belum ada akun guru pada tahun ajaran ini.</td></tr>
             @endforelse
         </tbody>
         @if (count($baris) > 0)
@@ -106,6 +110,8 @@
                     <td class="angka">{{ collect($baris)->sum('pulang') }}</td>
                     <td class="angka">{{ collect($baris)->sum('terlambat') }}</td>
                     <td class="angka">{{ collect($baris)->sum('menit_terlambat') }} menit</td>
+                    <td class="angka">{{ collect($baris)->sum('telat_kelas') }}</td>
+                    <td class="angka">{{ collect($baris)->sum('menit_telat_kelas') }} menit</td>
                     @foreach (['izin', 'sakit', 'cuti', 'alfa'] as $status)
                         <td class="angka">{{ collect($baris)->sum(fn (array $b): int => $b['ringkasan'][$status] ?? 0) }}</td>
                     @endforeach

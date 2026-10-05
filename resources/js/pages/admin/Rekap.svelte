@@ -31,6 +31,8 @@
         hari_efektif: number;
         terlambat: number;
         menit_terlambat: number;
+        telat_kelas: number;
+        menit_telat_kelas: number;
         persentase: number;
     };
     type Mode = 'bulanan' | 'periode';
@@ -273,6 +275,12 @@
                                 >Menit terlambat</th
                             >
                             <th class="px-2 py-2 text-right font-medium"
+                                >Telat kelas</th
+                            >
+                            <th class="px-2 py-2 text-right font-medium"
+                                >Menit telat kelas</th
+                            >
+                            <th class="px-2 py-2 text-right font-medium"
                                 >Izin/Sakit/Cuti</th
                             >
                             <th class="px-2 py-2 text-right font-medium"
@@ -305,6 +313,12 @@
                                     >{baris.menit_terlambat}</td
                                 >
                                 <td class="px-2 py-2 text-right tabular-nums"
+                                    >{baris.telat_kelas}</td
+                                >
+                                <td class="px-2 py-2 text-right tabular-nums"
+                                    >{baris.menit_telat_kelas}</td
+                                >
+                                <td class="px-2 py-2 text-right tabular-nums"
                                     >{(baris.ringkasan.izin ?? 0) +
                                         (baris.ringkasan.sakit ?? 0) +
                                         (baris.ringkasan.cuti ?? 0)}</td
@@ -322,7 +336,7 @@
                         {:else}
                             <tr
                                 ><td
-                                    colspan="8"
+                                    colspan="10"
                                     class="px-2 py-4 text-center text-muted-foreground"
                                     >Belum ada akun guru.</td
                                 ></tr
@@ -413,7 +427,7 @@
                                 .ringkasan.terlambat ?? 0} · Alfa {baris
                                 .ringkasan.alfa ?? 0} · Izin {baris.ringkasan
                                 .izin ?? 0} · Sakit {baris.ringkasan.sakit ?? 0} ·
-                            Cuti {baris.ringkasan.cuti ?? 0}</span
+                            Cuti {baris.ringkasan.cuti ?? 0} · Telat kelas {baris.telat_kelas}</span
                         >
                     </li>{/each}
             </ul>
