@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+# Sekali saja, di hPanel → Advanced → Cron Jobs (tiap menit):
+#   cd <folder aplikasi> && php artisan schedule:run >> /dev/null 2>&1
+# Tanpa cron ini push kelas kosong dan penghapusan foto masuk kelas
+# tidak berjalan; widget dashboard tetap berfungsi.
+
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$APP_DIR"
 
