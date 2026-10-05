@@ -20,3 +20,16 @@ test('tema papan absen memakai palet, font, dan radius desain A', function () {
         ->toContain("google('JetBrains Mono'")
         ->not->toContain('Roboto');
 });
+
+test('permukaan rata dan gerak pegas papan absen', function () {
+    $css = file_get_contents(resource_path('css/app.css'));
+
+    expect($css)
+        ->toContain('--spring: linear(')
+        ->toContain('--dur: 520ms;')
+        ->toContain('.press:active')
+        ->toContain('@media (prefers-reduced-motion: reduce)')
+        ->toContain('font-family: var(--font-display);')
+        // Morph sudut Material dibuang: kartu A diam saat disorot.
+        ->not->toContain('border-radius: 56px 28px 56px 28px');
+});

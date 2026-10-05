@@ -259,6 +259,64 @@
     --sidebar: #0d110d;
 }
 
+/*
+ * Kurva pegas kritis (damping 1, response 0.35 s) dalam bentuk linear().
+ * Tanpa pantulan: untuk perubahan yang dipicu ketukan. Gesture dengan
+ * lemparan memakai pegas JS di resources/js/lib/pegas.ts.
+ */
+:root {
+    --spring: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --dur: 520ms;
+}
+
+@supports (transition-timing-function: linear(0, 1)) {
+    :root {
+        --spring: linear(
+            0,
+            0.0443,
+            0.1435,
+            0.2629,
+            0.3833,
+            0.4945,
+            0.5921,
+            0.6749,
+            0.7435,
+            0.7992,
+            0.844,
+            0.8795,
+            0.9074,
+            0.9291,
+            0.946,
+            0.959,
+            0.9689,
+            0.9765,
+            0.9823,
+            0.9867,
+            0.99,
+            0.9925,
+            0.9944,
+            0.9958,
+            0.9969,
+            0.9977,
+            0.9983,
+            0.9987,
+            1
+        );
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 1ms !important;
+        animation-delay: 0ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
@@ -317,11 +375,12 @@
 }
 
 @layer components {
-    /* Section labels in the sidebar read as small caps, like the reference. */
+    /* Label grup sidebar: huruf kapital kecil di atas tinta gelap. */
     [data-sidebar='group-label'] {
         font-weight: 600;
-        letter-spacing: 0.12em;
-        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        font-size: 0.6875rem;
+        color: #a3ad9d;
     }
 
     /* Isi berformat pengumuman: editor admin dan tampilan guru memakai
@@ -369,37 +428,42 @@
         text-underline-offset: 2px;
     }
 
-    /* Material 3 Expressive tonal tile, shared by every surface. */
+    /* Kartu desain A: rata, bergaris tipis, tidak berubah bentuk saat disorot. */
     .g-tile {
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
-        border-radius: 28px;
-        padding: clamp(1.5rem, 3vw, 2.25rem);
-        transition: border-radius 0.5s var(--g-emphasized);
+        border: 1px solid var(--g-line);
+        border-radius: 10px;
+        padding: clamp(1.25rem, 2.5vw, 1.5rem);
     }
 
-    .g-tile:hover {
-        border-radius: 56px 28px 56px 28px;
-    }
-
-    /* A tile that is itself a link. */
+    /* Kartu yang sendirinya tautan: terangkat saat disorot, mengecil saat ditekan. */
     .g-tile-link {
         text-decoration: none;
         transition:
-            border-radius 0.5s var(--g-emphasized),
-            transform 0.3s var(--g-emphasized);
+            transform var(--dur) var(--spring),
+            box-shadow 240ms ease;
     }
 
-    .g-tile-link:hover {
-        transform: translateY(-2px);
+    @media (hover: hover) {
+        .g-tile-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--g-shadow);
+        }
+    }
+
+    .g-tile-link:active {
+        transform: scale(0.98);
+        transition-duration: 90ms;
     }
 
     .g-tile h3 {
-        font-size: 1.3125rem;
+        font-family: var(--font-display);
+        font-size: 1.25rem;
         font-weight: 700;
         line-height: 1.2;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.01em;
         text-wrap: balance;
     }
 
@@ -414,16 +478,19 @@
         font-size: 0.8125em;
     }
 
+    /* Biru = izin/sakit/cuti, seperti di papan guru desain A. */
     .g-tone-blue {
-        background: var(--g-blue-c);
-        color: var(--g-blue-ink);
+        background: var(--g-sky-c);
+        border-color: var(--g-sky-line);
+        color: var(--g-sky-ink);
     }
     .g-tone-blue p {
-        color: var(--g-blue-ink-2);
+        color: var(--g-sky-ink-2);
     }
 
     .g-tone-green {
         background: var(--g-green-c);
+        border-color: var(--g-green-line);
         color: var(--g-green-ink);
     }
     .g-tone-green p {
@@ -432,6 +499,7 @@
 
     .g-tone-yellow {
         background: var(--g-yellow-c);
+        border-color: var(--g-yellow-line);
         color: var(--g-yellow-ink);
     }
     .g-tone-yellow p {
@@ -440,6 +508,7 @@
 
     .g-tone-red {
         background: var(--g-red-c);
+        border-color: var(--g-red-line);
         color: var(--g-red-ink);
     }
     .g-tone-red p {
@@ -454,12 +523,38 @@
         color: var(--g-ink-2);
     }
 
-    /* Display voice: one scale, used by hero, section, and page titles. */
+    /* Suara display: judul halaman, angka besar, jam. */
     .g-display {
-        font-weight: 700;
-        line-height: 1.05;
+        font-family: var(--font-display);
+        font-weight: 800;
+        line-height: 1.02;
         letter-spacing: -0.03em;
         text-wrap: balance;
+    }
+
+    /* Respons tekan: turun cepat saat ditekan, kembali dengan pegas. */
+    .press {
+        transition: transform var(--dur) var(--spring);
+    }
+    .press:active {
+        transform: scale(0.96);
+        transition-duration: 90ms;
+    }
+
+    .lift {
+        transition:
+            transform var(--dur) var(--spring),
+            box-shadow 240ms ease;
+    }
+    @media (hover: hover) {
+        .lift:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--g-shadow);
+        }
+    }
+    .lift:active {
+        transform: scale(0.97);
+        transition-duration: 90ms;
     }
 }
 
