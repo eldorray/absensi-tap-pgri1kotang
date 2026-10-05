@@ -170,3 +170,27 @@ test('kartu hero tanpa arti status tidak ikut biru izin', function () {
         ->and(file_get_contents(resource_path('js/pages/orang-tua/Index.svelte')))
         ->not->toContain('g-tone-blue');
 });
+
+test('segmen geser punya thumb meluncur yang bisa diseret', function () {
+    $segmen = file_get_contents(resource_path('js/components/SegmenGeser.svelte'));
+
+    expect($segmen)
+        ->toContain('role="group"')
+        ->toContain('aria-pressed={o.nilai === nilai}')
+        ->toContain('translateX(')
+        // Diseret hanya kalau mulai dari segmen terpilih, seperti iOS.
+        ->toContain('setPointerCapture');
+});
+
+test('kartu geser memutuskan lewat geser atau tombol', function () {
+    $kartu = file_get_contents(resource_path('js/components/KartuGeser.svelte'));
+
+    expect($kartu)
+        ->toContain('proyeksi(')
+        ->toContain('karet(')
+        ->toContain('export function kembalikan')
+        // Tombol di dalam kartu tetap tombol: geser tidak dimulai dari sana.
+        ->toContain("closest('button')")
+        ->toContain("lempar('setujui')")
+        ->toContain("lempar('tolak')");
+});
