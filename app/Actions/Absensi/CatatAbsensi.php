@@ -175,6 +175,23 @@ class CatatAbsensi
     }
 
     /**
+     * Pesan sukses yang langsung menjawab "tercatat jam berapa, telat atau
+     * tidak", supaya guru tidak perlu membuka riwayat untuk memastikan.
+     */
+    public static function pesanTercatat(Absensi $absensi, TipeTap $tipe): string
+    {
+        $jam = now()->format('H.i');
+
+        if ($tipe === TipeTap::Pulang) {
+            return "Absen pulang tercatat pukul {$jam}.".($absensi->pulang_cepat ? ' Tercatat pulang cepat.' : '');
+        }
+
+        return "Absen masuk tercatat pukul {$jam}.".($absensi->status === StatusAbsensi::Terlambat
+            ? " Terlambat {$absensi->menit_terlambat} menit."
+            : ' Tepat waktu.');
+    }
+
+    /**
      * Tulis jejak percobaan yang gagal, lalu batalkan permintaan.
      *
      * @param  array<string, mixed>  $atribut
@@ -185,7 +202,7 @@ class CatatAbsensi
     {
         AbsensiAttempt::create([...$atribut, 'hasil' => $hasil]);
 
-        throw ValidationException::withMessages(['tap' => $pesan]);
+        throw TapDitolak::karena($hasil, $pesan);
     }
 
     /**

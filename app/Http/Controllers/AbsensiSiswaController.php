@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Kesiswaan\BukaFinalisasiAbsensiSiswa;
+use App\Actions\Kesiswaan\LembarAbsensiSiswa;
 use App\Actions\Kesiswaan\SimpanAbsensiSiswa;
 use App\Enums\StatusKehadiranSiswa;
-use App\Enums\StatusSesiAbsensiSiswa;
+use App\Http\Requests\PilihTanggalAbsensiSiswaRequest;
 use App\Http\Requests\SimpanAbsensiSiswaRequest;
 use App\Models\AbsensiSiswa;
-use App\Models\AnggotaKelas;
 use App\Models\GuruKelas;
 use App\Models\Kelas;
 use App\Models\PengaturanAplikasi;
@@ -28,55 +28,14 @@ use Inertia\Response;
 
 class AbsensiSiswaController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(PilihTanggalAbsensiSiswaRequest $request, LembarAbsensiSiswa $lembar): Response
     {
-        $guru = $request->user();
-        $tanggal = $this->tanggalDiminta($request);
-        $piket = $guru->can('piket');
-
-        // Guru piket mengabsen seluruh sekolah, jadi daftarnya seluruh kelas
-        // aktif tahun berjalan dan diurut per unit agar bisa dijelajahi
-        // kelas demi kelas. Guru cukup kelas yang diampu (wali atau
-        // pengganti) pada tanggal itu.
-        $query = Kelas::query()->where('is_active', true)->with('kantor:id,nama');
-
-        if ($piket) {
-            $query->orderBy('kantor_id')->orderBy('tingkat')->orderBy('nama');
-        } else {
-            $query->diampuOleh($guru, $tanggal);
-        }
-
-        $kelas = $query->get()->map(function (Kelas $kelas) use ($tanggal): array {
-            $sesi = SesiAbsensiSiswa::query()->where('kelas_id', $kelas->id)->whereDate('tanggal', $tanggal)->first();
-
-            return ['id' => $kelas->id, 'nama' => $kelas->nama, 'kantor' => $kelas->kantor?->nama, 'jumlah_siswa' => AnggotaKelas::query()->where('kelas_id', $kelas->id)->berlakuPada($tanggal)->count(), 'status' => $sesi?->status->value ?? StatusSesiAbsensiSiswa::BelumDiperiksa->value, 'terakhir_disimpan' => $sesi?->updated_at?->toIso8601String()];
-        })->values()->all();
-
-        return Inertia::render('absensi-siswa/Index', ['kelas' => $kelas, 'tanggal' => $tanggal->toDateString(), 'piket' => $piket]);
+        return Inertia::render('absensi-siswa/Index', $lembar->daftarKelas($request->user(), $request->tanggal()));
     }
 
-    public function show(Request $request, Kelas $kelas): Response
+    public function show(PilihTanggalAbsensiSiswaRequest $request, Kelas $kelas, LembarAbsensiSiswa $lembar): Response
     {
-        $guru = $request->user();
-        $tanggal = $this->tanggalDiminta($request);
-        $piket = $guru->can('piket');
-
-        abort_unless($piket || Kelas::query()->diampuOleh($guru, $tanggal)->whereKey($kelas->id)->exists(), 403);
-        $sesi = SesiAbsensiSiswa::query()->where('kelas_id', $kelas->id)->whereDate('tanggal', $tanggal)->with('absensis')->first();
-        $details = $sesi?->absensis->keyBy('siswa_id') ?? collect();
-        $siswas = AnggotaKelas::query()->where('kelas_id', $kelas->id)->berlakuPada($tanggal)->with('siswa:id,nis,nama')->get()->sortBy(fn (AnggotaKelas $a) => $a->siswa?->nama)->values()->map(function (AnggotaKelas $a) use ($details): array {
-            $detail = $details->get($a->siswa_id);
-
-            return ['id' => $a->siswa_id, 'nis' => $a->siswa?->nis, 'nama' => $a->siswa?->nama, 'status' => $detail?->status->value ?? StatusKehadiranSiswa::Hadir->value, 'catatan' => $detail?->catatan, 'jam_datang' => $detail?->jam_datang];
-        })->all();
-        $status = $sesi === null ? StatusSesiAbsensiSiswa::BelumDiperiksa : $sesi->status;
-        $terkunci = in_array($status, [StatusSesiAbsensiSiswa::Final, StatusSesiAbsensiSiswa::Dikoreksi], true);
-        // Mengisi absensi hanya hak guru piket, dan hanya untuk hari ini.
-        // Bagi guru, lembar ini selalu terbaca saja.
-        $dapatMengisi = $piket && $tanggal->isToday() && ! $terkunci;
-        $kelas->load('kantor:id,nama', 'tahunAjaran:id,nama');
-
-        return Inertia::render('absensi-siswa/Show', ['kelas' => ['id' => $kelas->id, 'nama' => $kelas->nama, 'kantor' => $kelas->kantor?->nama, 'tahun_ajaran' => $kelas->tahunAjaran?->nama], 'tanggal' => $tanggal->toDateString(), 'siswa' => $siswas, 'piket' => $piket, 'sesi' => ['status' => $status->value, 'catatan' => $sesi?->catatan, 'read_only' => ! $dapatMengisi, 'dapat_mengisi' => $dapatMengisi, 'dapat_dibuka' => $piket && $tanggal->isToday() && $status === StatusSesiAbsensiSiswa::Final]]);
+        return Inertia::render('absensi-siswa/Show', $lembar->lembar($request->user(), $kelas, $request->tanggal()));
     }
 
     /**
@@ -325,17 +284,6 @@ class AbsensiSiswaController extends Controller
     public function finalisasi(SimpanAbsensiSiswaRequest $request, Kelas $kelas, SimpanAbsensiSiswa $action): RedirectResponse
     {
         return $this->save($request, $kelas, $action, true);
-    }
-
-    /**
-     * Tanggal yang sedang dilihat. Hanya hari ini yang bisa disunting: hari
-     * lampau dibuka untuk membaca hasil finalisasi, hari depan tidak ada.
-     */
-    private function tanggalDiminta(Request $request): Carbon
-    {
-        $data = $request->validate(['tanggal' => ['nullable', 'date_format:Y-m-d', 'before_or_equal:today']]);
-
-        return isset($data['tanggal']) ? Carbon::createFromFormat('Y-m-d', $data['tanggal'])->startOfDay() : Carbon::today();
     }
 
     private function save(SimpanAbsensiSiswaRequest $request, Kelas $kelas, SimpanAbsensiSiswa $action, bool $final): RedirectResponse

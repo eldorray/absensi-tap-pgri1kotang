@@ -25,12 +25,7 @@ class MasukKelasController extends Controller
             $request->string('device_uuid')->toString(),
         );
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => sprintf(
-            'Masuk %s tercatat pukul %s.%s',
-            $absen->kelas->nama,
-            now()->format('H.i'),
-            $absen->menit_terlambat > 0 ? " Telat {$absen->menit_terlambat} menit." : ' Tepat waktu.',
-        )]);
+        Inertia::flash('toast', ['type' => 'success', 'message' => CatatMasukKelas::pesanTercatat($absen)]);
 
         return to_route('dashboard');
     }

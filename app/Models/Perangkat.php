@@ -21,7 +21,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $approved_at
  * @property-read User $user
  */
-#[Fillable(['user_id', 'uuid', 'label', 'user_agent', 'status'])]
+#[Fillable(['user_id', 'uuid', 'label', 'user_agent', 'kunci_publik', 'status'])]
 class Perangkat extends Model
 {
     /** @use HasFactory<PerangkatFactory> */

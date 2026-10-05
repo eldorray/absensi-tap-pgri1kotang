@@ -16,9 +16,14 @@ class DaftarkanPerangkat
      * dan seterusnya menunggu approve admin -- jalur ganti HP itulah vektor
      * titip absen, jadi hanya itu yang dijaga.
      *
+     * Kunci publik (dari aplikasi Android) hanya ditulis saat barisnya dibuat.
+     * Baris yang sudah ada tidak pernah menerima kunci baru: kalau bisa, siapa
+     * pun yang memegang token dan uuid HP orang bisa memasang kuncinya sendiri
+     * pada HP yang sudah disetujui TU.
+     *
      * @throws ValidationException
      */
-    public function __invoke(User $guru, string $uuid, ?string $userAgent): Perangkat
+    public function __invoke(User $guru, string $uuid, ?string $userAgent, ?string $kunciPublik = null): Perangkat
     {
         $terdaftarUntukOrangLain = Perangkat::query()
             ->where('uuid', $uuid)
@@ -50,6 +55,7 @@ class DaftarkanPerangkat
             'uuid' => $uuid,
             'label' => self::label($userAgent),
             'user_agent' => $userAgent,
+            'kunci_publik' => $kunciPublik,
             'status' => $sudahAdaYangAktif ? StatusPerangkat::Pending : StatusPerangkat::Active,
         ]);
 

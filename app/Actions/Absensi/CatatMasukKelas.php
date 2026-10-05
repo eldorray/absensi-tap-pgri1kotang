@@ -103,6 +103,16 @@ class CatatMasukKelas
         }
     }
 
+    public static function pesanTercatat(AbsensiKelas $absen): string
+    {
+        return sprintf(
+            'Masuk %s tercatat pukul %s.%s',
+            $absen->kelas->nama,
+            now()->format('H.i'),
+            $absen->menit_terlambat > 0 ? " Telat {$absen->menit_terlambat} menit." : ' Tepat waktu.',
+        );
+    }
+
     /**
      * @throws ValidationException
      */

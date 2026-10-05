@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Absensi\AjukanIzin;
 use App\Http\Requests\AjukanIzinRequest;
 use App\Models\Izin;
-use App\Notifications\PushAdmin;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,34 +17,16 @@ class IzinController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('izin/Index', [
-            'izins' => Izin::query()
-                ->where('user_id', $request->user()->id)
-                ->orderByDesc('tanggal_mulai')
-                ->get()
-                ->map(fn (Izin $izin): array => [
-                    'id' => $izin->id,
-                    'tipe' => $izin->tipe->value,
-                    'tanggal_mulai' => $izin->tanggal_mulai->toDateString(),
-                    'tanggal_selesai' => $izin->tanggal_selesai->toDateString(),
-                    'alasan' => $izin->alasan,
-                    'status' => $izin->status->value,
-                    'catatan_review' => $izin->catatan_review,
-                    'ada_lampiran' => $izin->lampiran_path !== null,
-                ])
-                ->all(),
+            'izins' => AjukanIzin::daftar($request->user()),
         ]);
     }
 
-    public function store(AjukanIzinRequest $request): RedirectResponse
+    public function store(AjukanIzinRequest $request, AjukanIzin $ajukan): RedirectResponse
     {
+        /** @var array{tipe: string, tanggal_mulai: string, tanggal_selesai: string, alasan: string} $data */
         $data = $request->safe()->only(['tipe', 'tanggal_mulai', 'tanggal_selesai', 'alasan']);
 
-        // Disk 'local' bukan 'public': surat dokter tidak boleh bisa dibuka
-        // dengan menebak URL.
-        $data['lampiran_path'] = $request->file('lampiran')?->store('izin', 'local');
-        $data['user_id'] = $request->user()->id;
-
-        PushAdmin::dariIzinGuru(Izin::create($data))->kirimKeAdmin();
+        $ajukan($request->user(), $data, $request->file('lampiran'));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Pengajuan izin terkirim.']);
 
