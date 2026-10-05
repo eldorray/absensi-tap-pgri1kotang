@@ -8,7 +8,7 @@ use App\Http\Requests\OrangTua\AjukanIzinRequest;
 use App\Models\IzinOrangTua;
 use App\Models\Siswa;
 use App\Models\TahunAjaran;
-use App\Notifications\IzinDiajukan;
+use App\Notifications\PushAdmin;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -95,7 +95,7 @@ class IzinController extends Controller
             throw $throwable;
         }
 
-        IzinDiajukan::dariIzinOrangTua($izin)->kirimKeAdmin();
+        PushAdmin::dariIzinOrangTua($izin)->kirimKeAdmin();
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Pengajuan izin anak terkirim.']);
 

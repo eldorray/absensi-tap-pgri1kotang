@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AjukanIzinRequest;
 use App\Models\Izin;
-use App\Notifications\IzinDiajukan;
+use App\Notifications\PushAdmin;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -44,7 +44,7 @@ class IzinController extends Controller
         $data['lampiran_path'] = $request->file('lampiran')?->store('izin', 'local');
         $data['user_id'] = $request->user()->id;
 
-        IzinDiajukan::dariIzinGuru(Izin::create($data))->kirimKeAdmin();
+        PushAdmin::dariIzinGuru(Izin::create($data))->kirimKeAdmin();
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Pengajuan izin terkirim.']);
 

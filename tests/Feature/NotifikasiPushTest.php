@@ -2,7 +2,7 @@
 
 use App\Models\Siswa;
 use App\Models\User;
-use App\Notifications\IzinDiajukan;
+use App\Notifications\PushAdmin;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -86,15 +86,15 @@ test('izin guru baru dikirim ke admin aktif yang berlangganan saja', function ()
 
     Notification::assertSentTo(
         $adminBerlangganan,
-        IzinDiajukan::class,
-        fn (IzinDiajukan $notifikasi): bool => $notifikasi->toWebPush($adminBerlangganan, $notifikasi)->toArray() === [
+        PushAdmin::class,
+        fn (PushAdmin $notifikasi): bool => $notifikasi->toWebPush($adminBerlangganan, $notifikasi)->toArray() === [
             'title' => 'Izin guru: Budi Santoso',
             'body' => 'Sakit, 17 September - 18 September 2026',
             'icon' => '/pwa-192.png',
             'data' => ['url' => route('admin.izin.index')],
         ],
     );
-    Notification::assertNotSentTo([$adminTanpaLangganan, $adminNonaktif, $guru], IzinDiajukan::class);
+    Notification::assertNotSentTo([$adminTanpaLangganan, $adminNonaktif, $guru], PushAdmin::class);
 });
 
 test('izin dari orang tua dikirim ke admin yang berlangganan', function () {
@@ -116,8 +116,8 @@ test('izin dari orang tua dikirim ke admin yang berlangganan', function () {
 
     Notification::assertSentTo(
         $admin,
-        IzinDiajukan::class,
-        fn (IzinDiajukan $notifikasi): bool => $notifikasi->judul === 'Izin siswa: Aisyah Putri'
+        PushAdmin::class,
+        fn (PushAdmin $notifikasi): bool => $notifikasi->judul === 'Izin siswa: Aisyah Putri'
             && $notifikasi->isi === 'Izin, 17 September 2026 (oleh Ibu Sari)'
             && $notifikasi->url === route('admin.izin-orang-tua.index'),
     );

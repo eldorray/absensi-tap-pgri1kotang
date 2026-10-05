@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SimpanLanggananPushRequest;
-use App\Notifications\IzinDiajukan;
+use App\Notifications\PushAdmin;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -36,7 +36,7 @@ class LanggananPushController extends Controller
      */
     public function tes(Request $request, WebPushChannel $channel): RedirectResponse
     {
-        $laporan = $channel->send($request->user(), new IzinDiajukan(
+        $laporan = $channel->send($request->user(), new PushAdmin(
             'Tes notifikasi',
             'Kalau ini muncul, notifikasi izin sudah berjalan.',
             route('admin.dashboard'),

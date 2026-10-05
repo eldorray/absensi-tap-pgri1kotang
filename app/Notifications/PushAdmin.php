@@ -7,15 +7,16 @@ use App\Models\Izin;
 use App\Models\IzinOrangTua;
 use App\Models\User;
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
 use NotificationChannels\WebPush\WebPushChannel;
 use NotificationChannels\WebPush\WebPushMessage;
 
 /**
- * Push ke HP admin saat ada pengajuan izin baru yang menunggu keputusan.
+ * Push ke HP admin: pengajuan izin baru dan kelas yang belum ada gurunya.
  */
-class IzinDiajukan extends Notification
+class PushAdmin extends Notification
 {
     public function __construct(
         public readonly string $judul,
@@ -42,20 +43,27 @@ class IzinDiajukan extends Notification
     }
 
     /**
+     * Admin aktif yang punya langganan push.
+     *
+     * @return Collection<int, User>
+     */
+    public static function penerima(): Collection
+    {
+        return User::query()
+            ->where('role', Role::Admin)
+            ->where('is_active', true)
+            ->whereHas('pushSubscriptions')
+            ->get();
+    }
+
+    /**
      * Dikirim setelah response selesai supaya pengaju tidak menunggu layanan
-     * push. Hanya admin aktif yang punya langganan yang diambil.
+     * push. Command terjadwal mengirim langsung lewat penerima().
      */
     public function kirimKeAdmin(): void
     {
         // ponytail: defer() tanpa queue worker; pindah ke ShouldQueue kalau admin banyak.
-        defer(fn () => NotificationFacade::send(
-            User::query()
-                ->where('role', Role::Admin)
-                ->where('is_active', true)
-                ->whereHas('pushSubscriptions')
-                ->get(),
-            $this,
-        ));
+        defer(fn () => NotificationFacade::send(self::penerima(), $this));
     }
 
     /**
