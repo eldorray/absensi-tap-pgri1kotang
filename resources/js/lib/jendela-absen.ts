@@ -137,6 +137,7 @@ export type SegmenJendela = {
 export function segmenJendela(
     jadwal: JadwalHariIni,
     toleransi: number,
+    sudahMasuk: boolean,
     sekarang: number,
 ): SegmenJendela {
     const awal = menit(jadwal.buka_masuk);
@@ -150,8 +151,13 @@ export function segmenJendela(
     let keterangan: string;
     let nada: SegmenJendela['nada'] = 'netral';
 
-    if (sekarang < awal) {
+    if (!sudahMasuk && sekarang >= tutup) {
+        keterangan = `Absen masuk ditutup ${jadwal.tutup_masuk}`;
+        nada = 'telat';
+    } else if (sekarang < awal) {
         keterangan = `Absen masuk buka ${jadwal.buka_masuk}`;
+    } else if (sudahMasuk && sekarang < pulang) {
+        keterangan = `Absen pulang buka ${jadwal.buka_pulang}`;
     } else if (sekarang < batas) {
         keterangan = `${batas - sekarang} mnt lagi batas tepat`;
         nada = 'tepat';

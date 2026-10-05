@@ -206,7 +206,12 @@
 
     const garis = $derived(
         jadwal && jadwal.is_hari_kerja && !libur
-            ? segmenJendela(jadwal, jadwal.toleransi_menit, menitServer)
+            ? segmenJendela(
+                  jadwal,
+                  jadwal.toleransi_menit,
+                  sudahMasuk,
+                  menitServer,
+              )
             : null,
     );
 

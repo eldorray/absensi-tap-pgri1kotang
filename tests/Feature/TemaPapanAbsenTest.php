@@ -202,7 +202,10 @@ test('garis jendela absen dihitung dari jadwal yang sama dengan server', functio
         ->toContain('export function segmenJendela(')
         // Batas tepat waktu = jam masuk + toleransi, sama dengan CatatAbsensi.
         ->toContain('menit(jadwal.jam_masuk) + toleransi')
-        ->toContain('mnt lagi batas tepat');
+        ->toContain('mnt lagi batas tepat')
+        // Guru yang belum tap masuk tidak boleh diberi tahu "absen pulang dibuka".
+        ->toContain('Absen masuk ditutup')
+        ->toContain('sudahMasuk: boolean');
 });
 
 test('beranda guru memakai garis jendela, tombol tap lebar, dan daftar status', function () {
