@@ -83,7 +83,10 @@ class GuruController extends Controller
 
     public function updatePerangkat(Request $request, Perangkat $perangkat): RedirectResponse
     {
-        $data = $request->validate(['status' => ['required', Rule::enum(StatusPerangkat::class)->only([StatusPerangkat::Active, StatusPerangkat::Revoked])]]);
+        $data = $request->validate([
+            'status' => ['required', Rule::enum(StatusPerangkat::class)->only([StatusPerangkat::Active, StatusPerangkat::Revoked])],
+            'kembali' => ['nullable', Rule::in(['dashboard'])],
+        ]);
         $status = StatusPerangkat::from($data['status']);
         DB::transaction(function () use ($request, $perangkat, $status): void {
             if ($status === StatusPerangkat::Active) {
@@ -92,6 +95,6 @@ class GuruController extends Controller
         });
         Inertia::flash('toast', ['type' => 'success', 'message' => $status === StatusPerangkat::Active ? $perangkat->label.' disetujui. HP lain milik guru ini dicabut.' : $perangkat->label.' dicabut.']);
 
-        return to_route('admin.guru.index');
+        return to_route(($data['kembali'] ?? null) === 'dashboard' ? 'admin.dashboard' : 'admin.guru.index');
     }
 }

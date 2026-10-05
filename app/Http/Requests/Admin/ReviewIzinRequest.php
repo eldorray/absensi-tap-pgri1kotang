@@ -21,6 +21,9 @@ class ReviewIzinRequest extends FormRequest
                 StatusIzin::Ditolak,
             ])],
             'catatan_review' => ['nullable', 'string', 'max:1000'],
+            // Tujuan tetap, bukan URL dari input: tidak bisa dipakai untuk
+            // mengalihkan admin ke luar aplikasi.
+            'kembali' => ['nullable', Rule::in(['dashboard'])],
         ];
     }
 }

@@ -39,6 +39,12 @@ class DashboardController extends Controller
      */
     private const JUMLAH_LOG = 12;
 
+    /**
+     * Banyaknya izin dan HP menunggu yang bisa diputuskan langsung dari
+     * dashboard. Sisanya lewat tautan ke halamannya masing-masing.
+     */
+    private const JUMLAH_PERSETUJUAN = 5;
+
     public function index(RekapHarian $rekapHarian, MasukKelasHariIni $masukKelasHariIni): Response
     {
         $hariIni = $rekapHarian(Carbon::today());
@@ -46,6 +52,16 @@ class DashboardController extends Controller
         return Inertia::render('admin/Dashboard', [
             'tanggal' => $hariIni['tanggal'],
             'ringkasanHariIni' => $hariIni['ringkasan'],
+            // Satu baris per guru dari rekap yang sama, supaya papan dan angka
+            // ringkasan tidak pernah berbeda.
+            'papanGuru' => array_map(fn (array $baris): array => [
+                'id' => $baris['user_id'],
+                'nama' => $baris['nama'],
+                'status' => $baris['status'],
+                'label' => $baris['label'],
+                'jam_masuk' => $baris['jam_masuk'],
+            ], $hariIni['baris']),
+            'menungguPersetujuan' => $this->menungguPersetujuan(),
             'perluTindakan' => [
                 'izin_menunggu' => Izin::query()->where('status', StatusIzin::Pending)->count(),
                 // Hanya HP guru: tautannya menuju halaman Guru, satu-satunya tempat
@@ -83,6 +99,49 @@ class DashboardController extends Controller
             'labelAnomali' => AnomaliAbsensi::label(),
             'vapidPublicKey' => config('webpush.vapid.public_key'),
         ]);
+    }
+
+    /**
+     * Izin guru dan HP guru yang menunggu keputusan, terlama dulu.
+     *
+     * @return array{
+     *     izin: list<array{id: int, nama: string, tipe: string, tanggal_mulai: string, tanggal_selesai: string, alasan: string}>,
+     *     perangkat: list<array{id: int, nama: string, label: string, diajukan: string|null}>
+     * }
+     */
+    private function menungguPersetujuan(): array
+    {
+        $izin = Izin::query()
+            ->with('user:id,name')
+            ->where('status', StatusIzin::Pending)
+            ->oldest()
+            ->limit(self::JUMLAH_PERSETUJUAN)
+            ->get()
+            ->map(fn (Izin $izin): array => [
+                'id' => $izin->id,
+                'nama' => $izin->user->name,
+                'tipe' => $izin->tipe->value,
+                'tanggal_mulai' => $izin->tanggal_mulai->toDateString(),
+                'tanggal_selesai' => $izin->tanggal_selesai->toDateString(),
+                'alasan' => $izin->alasan,
+            ]);
+
+        // Hanya HP guru, sama dengan hitungan perangkat_menunggu di atas.
+        $perangkat = Perangkat::query()
+            ->with('user:id,name')
+            ->where('status', StatusPerangkat::Pending)
+            ->whereHas('user', fn ($query) => $query->where('role', Role::Guru))
+            ->oldest()
+            ->limit(self::JUMLAH_PERSETUJUAN)
+            ->get()
+            ->map(fn (Perangkat $perangkat): array => [
+                'id' => $perangkat->id,
+                'nama' => $perangkat->user->name,
+                'label' => $perangkat->label,
+                'diajukan' => $perangkat->created_at?->format('d M H:i'),
+            ]);
+
+        return ['izin' => array_values($izin->all()), 'perangkat' => array_values($perangkat->all())];
     }
 
     /**

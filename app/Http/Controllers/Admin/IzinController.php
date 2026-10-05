@@ -47,6 +47,6 @@ class IzinController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Izin diperbarui.']);
 
-        return to_route('admin.izin.index');
+        return to_route($request->input('kembali') === 'dashboard' ? 'admin.dashboard' : 'admin.izin.index');
     }
 }
