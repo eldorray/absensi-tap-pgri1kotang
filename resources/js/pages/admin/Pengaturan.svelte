@@ -53,6 +53,7 @@
         day_of_week: number;
         jam_masuk: string;
         jam_pulang: string;
+        jam_masuk_kelas: string | null;
         is_hari_kerja: boolean;
     };
     type P = {
@@ -99,6 +100,8 @@
             ...j,
             jam_masuk: j.jam_masuk.slice(0, 5),
             jam_pulang: j.jam_pulang.slice(0, 5),
+            // String kosong dikirim sebagai null oleh middleware Laravel.
+            jam_masuk_kelas: j.jam_masuk_kelas?.slice(0, 5) ?? '',
         })),
     });
     const identitas = useForm<{
@@ -710,7 +713,7 @@
                     </div>
 
                     {#if j.is_hari_kerja}
-                        <div class="grid gap-3 sm:grid-cols-2">
+                        <div class="grid gap-3 sm:grid-cols-3">
                             <div class="grid gap-1.5">
                                 <Label for={`masuk-${j.day_of_week}`}
                                     >Jam masuk</Label
@@ -731,6 +734,16 @@
                                     bind:value={jadwal.jadwals[i].jam_pulang}
                                 />
                             </div>
+                            <div class="grid gap-1.5">
+                                <Label for={`kelas-${j.day_of_week}`}
+                                    >Jam masuk kelas</Label
+                                >
+                                <Input
+                                    id={`kelas-${j.day_of_week}`}
+                                    type="time"
+                                    bind:value={jadwal.jadwals[i].jam_masuk_kelas}
+                                />
+                            </div>
                         </div>
 
                         <p class="text-xs text-muted-foreground">
@@ -743,6 +756,11 @@
                                 j.jam_pulang,
                                 -aturan.buka_pulang_menit,
                             )}
+                        </p>
+                        <p class="text-xs text-muted-foreground">
+                            {j.jam_masuk_kelas
+                                ? `Guru harus sudah absen di kelas sebelum ${j.jam_masuk_kelas}.`
+                                : 'Jam masuk kelas kosong: hari ini tanpa absen masuk kelas.'}
                         </p>
                     {/if}
                 </div>

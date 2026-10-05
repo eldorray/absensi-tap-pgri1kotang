@@ -29,7 +29,7 @@ class PengaturanController extends Controller
         return Inertia::render('admin/Pengaturan', [
             'lokasis' => Lokasi::query()->with('kantor:id,nama')->orderBy('nama')->get(['id', 'kantor_id', 'nama', 'latitude', 'longitude', 'radius_meter', 'is_active']),
             'kantors' => Kantor::query()->orderBy('nama')->get(['id', 'nama']),
-            'jadwals' => JadwalKerja::query()->whereNull('user_id')->orderBy('day_of_week')->get(['day_of_week', 'jam_masuk', 'jam_pulang', 'is_hari_kerja']),
+            'jadwals' => JadwalKerja::query()->whereNull('user_id')->orderBy('day_of_week')->get(['day_of_week', 'jam_masuk', 'jam_pulang', 'jam_masuk_kelas', 'is_hari_kerja']),
             'pengaturan' => PengaturanAbsensi::current()->only(['toleransi_menit', 'buka_masuk_menit', 'tutup_masuk_menit', 'buka_pulang_menit']),
             'aplikasi' => [
                 'nama' => $aplikasi->nama,
@@ -137,6 +137,8 @@ class PengaturanController extends Controller
                 [
                     'jam_masuk' => $jadwal['jam_masuk'].':00',
                     'jam_pulang' => $jadwal['jam_pulang'].':00',
+                    // Kosong = hari itu tanpa absen masuk kelas.
+                    'jam_masuk_kelas' => isset($jadwal['jam_masuk_kelas']) ? $jadwal['jam_masuk_kelas'].':00' : null,
                     'is_hari_kerja' => $jadwal['is_hari_kerja'],
                 ],
             );

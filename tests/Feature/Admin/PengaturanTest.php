@@ -102,3 +102,27 @@ test('rentang hari libur terlalu panjang atau terbalik ditolak', function (array
     'terbalik' => [['tanggal' => '2026-12-26', 'sampai' => '2026-12-20']],
     'lebih dari 60 hari' => [['tanggal' => '2026-01-01', 'sampai' => '2026-03-15']],
 ]);
+
+test('admin mengatur jam masuk kelas per hari dan boleh mengosongkannya', function () {
+    $this->seed(JadwalKerjaSeeder::class);
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)->put(route('admin.jadwal.update'), ['jadwals' => [
+        ['day_of_week' => 1, 'jam_masuk' => '07:00', 'jam_pulang' => '14:00', 'jam_masuk_kelas' => '06:50', 'is_hari_kerja' => true],
+        ['day_of_week' => 2, 'jam_masuk' => '07:00', 'jam_pulang' => '14:00', 'jam_masuk_kelas' => null, 'is_hari_kerja' => true],
+    ]])->assertRedirect(route('admin.pengaturan.edit'));
+
+    $jam = JadwalKerja::whereNull('user_id')->pluck('jam_masuk_kelas', 'day_of_week');
+    expect($jam[1])->toBe('06:50:00')->and($jam[2])->toBeNull();
+
+    $this->actingAs($admin)->get(route('admin.pengaturan.edit'))
+        ->assertInertia(fn ($p) => $p->where('jadwals.1.jam_masuk_kelas', '06:50:00'));
+});
+
+test('jam masuk kelas harus berformat jam', function () {
+    $this->seed(JadwalKerjaSeeder::class);
+
+    $this->actingAs(User::factory()->admin()->create())->put(route('admin.jadwal.update'), ['jadwals' => [
+        ['day_of_week' => 1, 'jam_masuk' => '07:00', 'jam_pulang' => '14:00', 'jam_masuk_kelas' => '25:99', 'is_hari_kerja' => true],
+    ]])->assertSessionHasErrors('jadwals.0.jam_masuk_kelas');
+});

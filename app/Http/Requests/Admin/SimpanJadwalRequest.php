@@ -15,6 +15,7 @@ class SimpanJadwalRequest extends FormRequest
             'jadwals.*.day_of_week' => ['required', 'integer', 'between:0,6'],
             'jadwals.*.jam_masuk' => ['required', 'date_format:H:i'],
             'jadwals.*.jam_pulang' => ['required', 'date_format:H:i', 'after:jadwals.*.jam_masuk'],
+            'jadwals.*.jam_masuk_kelas' => ['nullable', 'date_format:H:i'],
             'jadwals.*.is_hari_kerja' => ['required', 'boolean'],
         ];
     }
