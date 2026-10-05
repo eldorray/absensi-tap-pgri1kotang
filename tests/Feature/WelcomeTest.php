@@ -73,12 +73,13 @@ test('welcome tersusun untuk HP dan PWA terpasang', function () {
         ->toContain('safe-top')
         ->toContain('safe-bottom');
 
-    // Warna bilah sistem PWA ikut hijau aplikasi, bukan putih bawaan.
+    // Warna bilah sistem PWA ikut warna kertas header aplikasi (desain A),
+    // bukan putih bawaan.
     expect(file_get_contents(public_path('manifest.webmanifest')))
-        ->toContain('"theme_color": "#2f6d21"');
+        ->toContain('"theme_color": "#f4f1ea"');
 
     expect(file_get_contents(resource_path('views/app.blade.php')))
-        ->toContain('content="#2f6d21"')
+        ->toContain('content="#f4f1ea"')
         ->toContain('viewport-fit=cover')
         ->toContain('maximum-scale=1.0')
         ->toContain('user-scalable=no')
