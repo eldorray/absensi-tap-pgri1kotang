@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\IzinController;
 use App\Http\Controllers\JadwalSayaController;
 use App\Http\Controllers\KelasSayaController;
+use App\Http\Controllers\MasukKelasController;
 use App\Http\Controllers\OrangTua\DashboardController as OrangTuaDashboardController;
 use App\Http\Controllers\OrangTua\IzinController as OrangTuaIzinController;
 use App\Http\Controllers\PengumumanController as PengumumanGuruController;
@@ -77,6 +78,10 @@ Route::middleware(['auth', 'verified', 'can:pegawai'])->group(function () {
     Route::post('absensi', [AbsensiController::class, 'store'])
         ->middleware('throttle:10,1')
         ->name('absensi.store');
+
+    Route::post('masuk-kelas', [MasukKelasController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('masuk-kelas.store');
 
     Route::get('absensi/passkey-options', [AbsensiPasskeyController::class, 'index'])
         ->name('absensi.passkey-options');
