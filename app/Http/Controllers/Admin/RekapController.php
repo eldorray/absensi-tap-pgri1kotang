@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Absensi\RekapBulanan;
+use App\Actions\Absensi\RekapMasukKelas;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Models\Kantor;
@@ -137,6 +138,60 @@ class RekapController extends Controller
                         $baris['menit_telat_kelas'],
                     ]);
                 }
+            }
+
+            fclose($keluaran);
+        }, $nama, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    /**
+     * Tab rekap masuk kelas: per kelas, karena kewajibannya melekat pada kelas.
+     * Memakai filter yang sama dengan rekap absensi guru.
+     */
+    public function masukKelas(Request $request, RekapMasukKelas $rekapMasukKelas): Response
+    {
+        $filter = $this->filter($request);
+
+        return Inertia::render('admin/RekapMasukKelas', [
+            'filter' => [
+                'mode' => $filter['mode'],
+                'tahun' => $filter['tahun'],
+                'bulan' => $filter['bulan'],
+                'mulai' => $filter['mulai']->toDateString(),
+                'selesai' => $filter['selesai']->toDateString(),
+                'kantor_id' => $filter['kantor_id'],
+            ],
+            'kantors' => Kantor::query()->orderBy('nama')->get(['id', 'nama']),
+            'rekap' => $rekapMasukKelas($filter['mulai'], $filter['selesai'], $filter['kantor_id']),
+        ]);
+    }
+
+    public function exportMasukKelas(Request $request, RekapMasukKelas $rekapMasukKelas): StreamedResponse
+    {
+        $filter = $this->filter($request);
+        $rekap = $rekapMasukKelas($filter['mulai'], $filter['selesai'], $filter['kantor_id']);
+        $nama = sprintf('rekap-masuk-kelas-%s-sd-%s.csv', $filter['mulai']->toDateString(), $filter['selesai']->toDateString());
+
+        return response()->streamDownload(function () use ($rekap): void {
+            $keluaran = fopen('php://output', 'wb');
+
+            if ($keluaran === false) {
+                throw new \RuntimeException('Gagal membuka keluaran CSV.');
+            }
+
+            fwrite($keluaran, "\xEF\xBB\xBF");
+            fputcsv($keluaran, ['Unit', 'Kelas', 'Hari efektif', 'Tepat', 'Telat', 'Kosong', '% Tepat']);
+
+            foreach ($rekap as $kelas) {
+                fputcsv($keluaran, [
+                    $kelas['unit'],
+                    $kelas['nama'],
+                    $kelas['hari_efektif'],
+                    $kelas['tepat'],
+                    $kelas['telat'],
+                    $kelas['kosong'],
+                    $kelas['persentase'],
+                ]);
             }
 
             fclose($keluaran);

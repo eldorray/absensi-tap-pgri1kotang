@@ -5,13 +5,14 @@
 </script>
 
 <script lang="ts">
-    import { page, router } from '@inertiajs/svelte';
+    import { Link, page, router } from '@inertiajs/svelte';
     import Download from 'lucide-svelte/icons/download';
     import Printer from 'lucide-svelte/icons/printer';
     import {
         cetak,
         exportMethod,
         index,
+        masukKelas,
     } from '@/actions/App/Http/Controllers/Admin/RekapController';
     import AppHead from '@/components/AppHead.svelte';
     import { Button } from '@/components/ui/button';
@@ -169,6 +170,17 @@
 
 <AppHead title="Rekap absensi" />
 <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6">
+    <nav class="flex gap-2" aria-label="Jenis rekap">
+        <span
+            class="inline-flex min-h-11 items-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground"
+            aria-current="page">Absensi guru</span
+        >
+        <Link
+            href={masukKelas.url()}
+            class="inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold hover:bg-muted"
+            >Masuk kelas</Link
+        >
+    </nav>
     <section class="g-tile g-tone-plain gap-3">
         <h3>Rekap {judul}</h3>
         <div class="flex flex-wrap items-end gap-2">

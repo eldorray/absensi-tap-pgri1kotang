@@ -108,6 +108,8 @@ Route::middleware(['auth', 'verified', 'can:admin'])
         Route::get('rekap', [RekapController::class, 'index'])->name('rekap.index');
         Route::get('rekap/export', [RekapController::class, 'export'])->name('rekap.export');
         Route::get('rekap/cetak', [RekapController::class, 'cetak'])->name('rekap.cetak');
+        Route::get('rekap/masuk-kelas', [RekapController::class, 'masukKelas'])->name('rekap.masuk-kelas');
+        Route::get('rekap/masuk-kelas/export', [RekapController::class, 'exportMasukKelas'])->name('rekap.masuk-kelas.export');
         Route::get('rekap-harian', [RekapHarianController::class, 'index'])->name('rekap-harian.index');
         Route::get('rekap-harian/export', [RekapHarianController::class, 'export'])->name('rekap-harian.export');
         Route::delete('rekap-harian/{guru}', [RekapHarianController::class, 'reset'])->name('rekap-harian.reset');
