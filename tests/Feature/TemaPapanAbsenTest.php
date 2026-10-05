@@ -44,3 +44,21 @@ test('pegas gesture menghormati pengaturan kurangi gerak', function () {
         ->toContain('export function kurvaPegas(')
         ->toContain("'(prefers-reduced-motion: reduce)'");
 });
+
+test('sheet bawah ditarik turun hanya dari pegangannya', function () {
+    $aksi = file_get_contents(resource_path('js/lib/tarikTutup.ts'));
+    $konten = file_get_contents(resource_path('js/components/ui/sheet/SheetContent.svelte'));
+    $profil = file_get_contents(resource_path('js/components/GuruProfileSheet.svelte'));
+
+    expect($aksi)
+        // Isi sheet yang digulir tidak boleh ikut menutup sheet.
+        ->toContain("closest('[data-tarik]')")
+        ->toContain('setPointerCapture')
+        ->and($konten)
+        ->toContain('use:tarikTutup')
+        ->toContain('easing: kurvaPegas')
+        ->toContain("aktif: side === 'bottom'")
+        ->toContain('reduceMotion ? 0')
+        ->and($profil)
+        ->toContain('data-tarik');
+});

@@ -2,8 +2,10 @@
     import type { Snippet } from 'svelte';
     import { getContext } from 'svelte';
     import X from 'lucide-svelte/icons/x';
-    import { fly } from 'svelte/transition';
+    import { fade } from 'svelte/transition';
     import { focusTrap } from '@/components/ui/dialog/focus-trap';
+    import { kurvaPegas } from '@/lib/pegas';
+    import { tarikTutup } from '@/lib/tarikTutup';
     import { cn } from '@/lib/utils';
     import { SHEET_CONTEXT, type SheetContext } from './context';
 
@@ -45,22 +47,28 @@
         };
     }
 
-    const panelTransition = () => {
-        const axis =
-            side === 'left'
-                ? { x: -320, y: 0 }
-                : side === 'right'
-                  ? { x: 320, y: 0 }
-                  : side === 'top'
-                    ? { x: 0, y: -320 }
-                    : { x: 0, y: 320 };
-
+    /**
+     * Masuk dan keluar lewat sisi yang sama dengan kurva pegas. Keluar mulai
+     * dari transform yang sedang tampil, jadi sheet yang ditarik jari lanjut
+     * turun dari posisi itu, tidak melompat balik dulu.
+     */
+    function geser(node: HTMLElement, { keluar }: { keluar: boolean }) {
         const reduceMotion = window.matchMedia?.(
             '(prefers-reduced-motion: reduce)',
         ).matches;
+        const sekarang = getComputedStyle(node).transform;
+        const dasar = sekarang === 'none' ? '' : sekarang;
+        const mendatar = side === 'left' || side === 'right';
+        const ukuran = (mendatar ? node.offsetWidth : node.offsetHeight) + 24;
+        const jarak = side === 'left' || side === 'top' ? -ukuran : ukuran;
 
-        return { ...axis, duration: reduceMotion ? 0 : 260, opacity: 1 };
-    };
+        return {
+            duration: reduceMotion ? 0 : keluar ? 380 : 520,
+            easing: kurvaPegas,
+            css: (t: number) =>
+                `transform: ${dasar} translate${mendatar ? 'X' : 'Y'}(${(1 - t) * jarak}px)`,
+        };
+    }
 </script>
 
 {#if open()}
@@ -68,9 +76,10 @@
         <button
             type="button"
             tabindex="-1"
-            class="fixed inset-0 border-0 bg-black/50"
+            class="fixed inset-0 border-0 bg-black/40"
             aria-label="Tutup"
             onclick={close}
+            transition:fade={{ duration: 200 }}
         ></button>
         <div
             class={cn(
@@ -81,8 +90,9 @@
             )}
             tabindex="-1"
             use:focusTrap={{ onEscape: close }}
-            in:fly={panelTransition()}
-            out:fly={panelTransition()}
+            use:tarikTutup={{ aktif: side === 'bottom', onTutup: close }}
+            in:geser={{ keluar: false }}
+            out:geser={{ keluar: true }}
         >
             <button
                 type="button"

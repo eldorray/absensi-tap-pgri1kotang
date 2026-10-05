@@ -118,7 +118,7 @@
         side="bottom"
         class="inset-x-0 mx-auto h-fit max-h-[78svh] w-full max-w-lg gap-0 overflow-hidden rounded-t-[2rem] border-x border-t border-border/70 bg-background px-0 pt-0 pb-0 shadow-[0_-24px_80px_rgba(15,23,42,0.24)]"
     >
-        <div class="shrink-0 bg-background px-5 pt-3 pb-3">
+        <div data-tarik class="shrink-0 touch-none bg-background px-5 pt-3 pb-3">
             <div
                 class="mx-auto h-1.5 w-11 rounded-full bg-muted-foreground/20"
             ></div>
