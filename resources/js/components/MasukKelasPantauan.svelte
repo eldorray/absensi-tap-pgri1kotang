@@ -96,9 +96,9 @@
 </script>
 
 <section class="g-tile g-tone-plain gap-3">
-    <div>
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h3>Masuk kelas</h3>
-        <p class="text-muted-foreground">
+        <p class="text-sm text-muted-foreground">
             Batas {masukKelas.batas} · {terisi}/{masukKelas.kelas.length} kelas terisi
         </p>
     </div>
@@ -112,12 +112,14 @@
                     {unit}
                 </p>
             {/if}
-            <ul class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <ul
+                class="grid grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] gap-2"
+            >
                 {#each daftar as kelas (kelas.id)}
                     <li>
                         <button
                             type="button"
-                            class="g-tile w-full gap-1 px-4 py-3 text-left {nada[
+                            class="g-tile lift w-full gap-1 px-3.5 py-3 text-left {nada[
                                 kelas.status
                             ]}"
                             disabled={kelas.guru.length === 0}
@@ -129,12 +131,17 @@
                             <span
                                 class="flex items-center justify-between gap-2"
                             >
-                                <span class="font-semibold">{kelas.nama}</span>
+                                <span
+                                    class="font-display text-xl leading-none font-extrabold"
+                                    >{kelas.nama}</span
+                                >
                                 <span class="text-xs font-semibold uppercase"
                                     >{label[kelas.status]}</span
                                 >
                             </span>
-                            <span class="text-sm">{keterangan(kelas)}</span>
+                            <span class="font-mono text-xs font-semibold"
+                                >{keterangan(kelas)}</span
+                            >
                         </button>
                     </li>
                 {/each}

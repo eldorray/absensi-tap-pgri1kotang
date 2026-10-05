@@ -77,3 +77,16 @@ test('tujuan kembali hanya boleh dashboard', function () {
 
     expect($izin->fresh()->status)->toBe(StatusIzin::Pending);
 });
+
+test('halaman dashboard admin memakai papan, kartu geser, dan segmen saring', function () {
+    $halaman = file_get_contents(resource_path('js/pages/admin/Dashboard.svelte'));
+
+    expect($halaman)
+        ->toContain('<SegmenGeser')
+        ->toContain('<KartuGeser')
+        // Keputusan dari dashboard kembali ke dashboard, bukan ke halaman Izin.
+        ->toContain("kembali: 'dashboard'")
+        // Kartu yang gagal dikirim kembali ke tempatnya.
+        ->toContain('kembalikan()')
+        ->toContain('{#key saring}');
+});
