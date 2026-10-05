@@ -17,11 +17,11 @@
     };
 
     const base =
-        'inline-flex items-center justify-center gap-2 rounded-full text-sm font-semibold tracking-[-0.005em] whitespace-nowrap transition-[background-color,border-color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&>svg]:shrink-0';
+        'press inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-[background-color,border-color,box-shadow,transform] duration-(--dur) ease-(--spring) active:duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&>svg]:shrink-0';
 
     const variants: Record<Variant, string> = {
         default:
-            'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:shadow-md active:translate-y-px',
+            'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:shadow-md',
         secondary:
             'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',

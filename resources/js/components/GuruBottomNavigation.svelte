@@ -72,7 +72,6 @@
 
         return utama.findIndex((item) => isActive(toUrl(item.href)));
     });
-
 </script>
 
 <Sheet bind:open={terbuka}>

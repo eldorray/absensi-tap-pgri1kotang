@@ -14,7 +14,6 @@
     const indeksPil = $derived(
         items.findIndex((item) => page.url.split('?')[0] === item.href),
     );
-
 </script>
 
 <nav
