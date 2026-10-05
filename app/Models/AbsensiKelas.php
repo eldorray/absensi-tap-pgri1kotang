@@ -60,6 +60,22 @@ class AbsensiKelas extends Model
     }
 
     /**
+     * Bentuk satu absen untuk layar guru, dashboard, dan rekap.
+     *
+     * @return array{nama: string, jam: string, menitTerlambat: int, absensiKelasId: int, adaFoto: bool}
+     */
+    public function ringkasan(): array
+    {
+        return [
+            'nama' => $this->user->name,
+            'jam' => $this->created_at?->format('H:i') ?? '',
+            'menitTerlambat' => $this->menit_terlambat,
+            'absensiKelasId' => $this->id,
+            'adaFoto' => $this->foto_path !== null,
+        ];
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array
