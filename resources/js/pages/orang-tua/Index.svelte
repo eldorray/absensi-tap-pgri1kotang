@@ -240,7 +240,7 @@
         {#if siswaTerpilih}
             <button
                 type="button"
-                class="g-tile g-tone-blue w-full text-left transition active:scale-[0.985]"
+                class="g-tile g-tone-green w-full text-left transition active:scale-[0.985]"
                 aria-label="Lihat biodata anak"
                 onclick={() => aturBiodataTerbuka(true)}
             >

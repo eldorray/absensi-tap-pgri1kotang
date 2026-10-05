@@ -21,6 +21,17 @@
 
     let terbuka = $state(false);
 
+    /**
+     * Sheet sudah tertutup tapi page.url baru berubah saat respons Inertia
+     * tiba. Tanpa penanda ini pil sempat meluncur ke tab lama lalu balik.
+     */
+    let menujuLainnya = $state(false);
+
+    function keLainnya(): void {
+        menujuLainnya = true;
+        terbuka = false;
+    }
+
     /*
      * Riwayat di slot utama karena dibuka rutin untuk mengecek kehadiran;
      * Jadwal jarang berubah, jadi cukup di "Lainnya".
@@ -66,7 +77,7 @@
      * luar navigasi (mis. Profil): pil disembunyikan, bukan menunjuk slot salah.
      */
     const indeksPil = $derived.by(() => {
-        if (terbuka || lainnyaAktif) {
+        if (terbuka || lainnyaAktif || menujuLainnya) {
             return 3;
         }
 
@@ -95,7 +106,11 @@
         >
             <Link
                 href={toUrl(pengumumanIndex())}
-                onclick={() => (terbuka = false)}
+                onclick={keLainnya}
+                onFinish={() => (menujuLainnya = false)}
+                aria-current={isActive(toUrl(pengumumanIndex()))
+                    ? 'page'
+                    : undefined}
                 class="press flex min-h-14 items-center gap-3 rounded-lg px-3 font-semibold {isActive(
                     toUrl(pengumumanIndex()),
                 )
@@ -124,7 +139,11 @@
 
             <Link
                 href={toUrl(jadwalIndex())}
-                onclick={() => (terbuka = false)}
+                onclick={keLainnya}
+                onFinish={() => (menujuLainnya = false)}
+                aria-current={isActive(toUrl(jadwalIndex()))
+                    ? 'page'
+                    : undefined}
                 class="press flex min-h-14 items-center gap-3 rounded-lg px-3 font-semibold {isActive(
                     toUrl(jadwalIndex()),
                 )
@@ -146,7 +165,11 @@
             {#if punyaKelas}
                 <Link
                     href={toUrl(kelasSayaIndex())}
-                    onclick={() => (terbuka = false)}
+                    onclick={keLainnya}
+                    onFinish={() => (menujuLainnya = false)}
+                    aria-current={isActive(toUrl(kelasSayaIndex()))
+                        ? 'page'
+                        : undefined}
                     class="press flex min-h-14 items-center gap-3 rounded-lg px-3 font-semibold {isActive(
                         toUrl(kelasSayaIndex()),
                     )
@@ -166,7 +189,11 @@
                 </Link>
                 <Link
                     href={toUrl(absensiSiswaIndex())}
-                    onclick={() => (terbuka = false)}
+                    onclick={keLainnya}
+                    onFinish={() => (menujuLainnya = false)}
+                    aria-current={isActive(toUrl(absensiSiswaIndex()))
+                        ? 'page'
+                        : undefined}
                     class="press flex min-h-14 items-center gap-3 rounded-lg px-3 font-semibold {isActive(
                         toUrl(absensiSiswaIndex()),
                     )

@@ -93,9 +93,9 @@
         hadir: 'bg-[var(--g-green-c)] text-[var(--g-green-ink)]',
         terlambat: 'bg-[var(--g-yellow-c)] text-[var(--g-yellow-ink)]',
         alfa: 'bg-[var(--g-red-c)] text-[var(--g-red-ink)]',
-        izin: 'bg-[var(--g-blue-c)] text-[var(--g-blue-ink)] ring-1 ring-inset ring-[var(--g-blue-ink-2)]',
-        sakit: 'bg-[var(--g-blue)] text-[var(--g-on-blue)]',
-        cuti: 'border border-dashed border-[var(--g-blue-ink-2)] text-[var(--g-blue-ink)]',
+        izin: 'bg-[var(--g-sky-c)] text-[var(--g-sky-ink)] ring-1 ring-inset ring-[var(--g-sky-ink-2)]',
+        sakit: 'bg-[var(--g-sky-ink-2)] text-[var(--g-sky-c)]',
+        cuti: 'border border-dashed border-[var(--g-sky-ink-2)] text-[var(--g-sky-ink)]',
         libur: 'bg-muted text-muted-foreground',
     };
     const legenda: { status: string; huruf: string; arti: string }[] = [

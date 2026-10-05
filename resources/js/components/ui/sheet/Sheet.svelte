@@ -13,8 +13,11 @@
         children?: Snippet;
     } = $props();
 
+    const uid = $props.id();
+
     const context: SheetContext = {
         open: () => open,
+        titleId: `sheet-judul-${uid}`,
         setOpen: (value: boolean) => {
             open = value;
             onOpenChange?.(value);

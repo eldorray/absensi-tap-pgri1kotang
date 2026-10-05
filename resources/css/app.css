@@ -354,6 +354,11 @@
         border-radius: 6px;
     }
 
+    /* Hijau merek hanya 2.2:1 di atas sidebar gelap; cincin sidebar terang. */
+    [data-sidebar] :focus-visible {
+        outline-color: var(--sidebar-ring);
+    }
+
     ::-webkit-scrollbar {
         width: 12px;
         height: 12px;

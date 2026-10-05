@@ -21,8 +21,9 @@ test('versi dan kredit F.A.K tampil di sidebar admin, sheet profil guru, dan hal
         ->toContain('https://fahmiealkhudhorie.site/')
         ->toContain('rel="noopener noreferrer"');
 
+    // Varian gelap: teks versi biasa hanya 2.5:1 di atas sidebar tinta.
     expect(file_get_contents(resource_path('js/components/AppSidebar.svelte')))
-        ->toContain('<AppVersion />');
+        ->toContain('<AppVersion gelap />');
 
     expect(file_get_contents(resource_path('js/components/GuruProfileSheet.svelte')))
         ->toContain('<AppVersion class="mt-1" />');

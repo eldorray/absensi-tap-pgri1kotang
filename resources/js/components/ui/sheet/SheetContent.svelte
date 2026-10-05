@@ -19,7 +19,8 @@
         children?: Snippet;
     } = $props();
 
-    const { open, setOpen } = getContext<SheetContext>(SHEET_CONTEXT);
+    const { open, setOpen, titleId } =
+        getContext<SheetContext>(SHEET_CONTEXT);
 
     const sideClasses: Record<string, string> = {
         right: 'inset-y-0 right-0',
@@ -88,6 +89,9 @@
                 sizeClasses[side] ?? sizeClasses.right,
                 className,
             )}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
             tabindex="-1"
             use:focusTrap={{ onEscape: close }}
             use:tarikTutup={{ aktif: side === 'bottom', onTutup: close }}

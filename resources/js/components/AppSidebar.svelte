@@ -211,7 +211,7 @@
         <!-- Tautan Repository dan Documentation bawaan starter kit dibuang:
              itu dokumentasi Laravel, bukan aplikasi ini. -->
         <NavUser />
-        <AppVersion />
+        <AppVersion gelap />
     </SidebarFooter>
 </Sidebar>
 {@render children?.()}

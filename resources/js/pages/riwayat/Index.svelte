@@ -81,15 +81,15 @@
         },
         izin: {
             label: 'Izin',
-            kelas: 'bg-[var(--g-blue-c)] text-[var(--g-blue-ink)]',
+            kelas: 'bg-[var(--g-sky-c)] text-[var(--g-sky-ink)]',
         },
         sakit: {
             label: 'Sakit',
-            kelas: 'bg-[var(--g-blue)] text-[var(--g-on-blue)]',
+            kelas: 'bg-[var(--g-sky-ink-2)] text-[var(--g-sky-c)]',
         },
         cuti: {
             label: 'Cuti',
-            kelas: 'border-dashed border-[var(--g-blue-ink-2)] text-[var(--g-blue-ink)]',
+            kelas: 'border-dashed border-[var(--g-sky-ink-2)] text-[var(--g-sky-ink)]',
         },
         libur: { label: 'Libur', kelas: 'bg-muted text-muted-foreground' },
         belum: { label: 'Belum absen', kelas: 'text-muted-foreground' },

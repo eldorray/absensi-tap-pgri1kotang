@@ -84,7 +84,7 @@ test('nav bawah memakai pil geser dan sheet lainnya', function () {
     expect($guru)
         ->toContain('const indeksPil = $derived')
         // Di halaman menu Lainnya pil pindah ke slot ke-4.
-        ->toContain('lainnyaAktif) {')
+        ->toContain('terbuka || lainnyaAktif || menujuLainnya) {')
         ->toContain('<SheetContent')
         ->toContain('side="bottom"')
         ->toContain('data-tarik')
@@ -105,4 +105,68 @@ test('jempol scrollbar tidak bergaris warna latar di sidebar gelap', function ()
         ->toContain("[data-sidebar='content'] {")
         ->toContain('scrollbar-color: #3a4a3e transparent;')
         ->not->toContain('border: 3px solid var(--g-bg);');
+});
+
+test('ketukan saat sheet memantul tidak membekukannya di tengah jalan', function () {
+    $aksi = file_get_contents(resource_path('js/lib/tarikTutup.ts'));
+    $turun = substr($aksi, strpos($aksi, 'const turun'), strpos($aksi, 'const gerak') - strpos($aksi, 'const turun'));
+
+    expect($turun)
+        // Pegas baru dihentikan saat tarikan benar-benar dimulai, dan jari
+        // kedua tidak menimpa tarikan yang sedang berjalan.
+        ->not->toContain('hentikan(p)')
+        ->toContain('if (tarikan) {')
+        ->and($aksi)
+        ->toContain("tarikan.aktif = true;\n            hentikan(p);");
+});
+
+test('kecepatan lepas diukur saat jari diangkat, bukan dari gerakan terakhir', function () {
+    $aksi = file_get_contents(resource_path('js/lib/tarikTutup.ts'));
+    $naik = substr($aksi, strpos($aksi, 'const naik'));
+
+    expect($naik)->toContain('selesai.riwayat.push({ x: p.x, t: performance.now() });');
+});
+
+test('pil tetap di slot lainnya selama pindah halaman dari sheet', function () {
+    $guru = file_get_contents(resource_path('js/components/GuruBottomNavigation.svelte'));
+
+    expect($guru)
+        ->toContain('let menujuLainnya = $state(false);')
+        ->toContain('terbuka || lainnyaAktif || menujuLainnya')
+        ->toContain('onFinish={() => (menujuLainnya = false)}');
+});
+
+test('izin sakit cuti memakai biru langit, bukan hijau hadir', function () {
+    foreach (['js/pages/admin/RekapHarian.svelte', 'js/pages/riwayat/Index.svelte', 'js/pages/admin/Rekap.svelte', 'js/lib/pengumuman.ts'] as $file) {
+        expect(file_get_contents(resource_path($file)))
+            ->toContain('--g-sky-')
+            ->not->toContain('--g-blue-c)');
+    }
+});
+
+test('teks versi dan fokus terbaca di sidebar gelap', function () {
+    expect(file_get_contents(resource_path('js/components/AppSidebar.svelte')))
+        ->toContain('<AppVersion gelap />')
+        ->and(file_get_contents(resource_path('js/components/AppVersion.svelte')))
+        ->toContain('text-sidebar-foreground/70')
+        ->and(file_get_contents(resource_path('css/app.css')))
+        ->toContain('[data-sidebar] :focus-visible');
+});
+
+test('sheet diumumkan sebagai dialog berjudul', function () {
+    expect(file_get_contents(resource_path('js/components/ui/sheet/SheetContent.svelte')))
+        ->toContain('role="dialog"')
+        ->toContain('aria-modal="true"')
+        ->toContain('aria-labelledby={titleId}')
+        ->and(file_get_contents(resource_path('js/components/ui/sheet/SheetTitle.svelte')))
+        ->toContain('id={context?.titleId}')
+        ->and(file_get_contents(resource_path('js/components/GuruBottomNavigation.svelte')))
+        ->toContain('aria-current={isActive(toUrl(jadwalIndex()))');
+});
+
+test('kartu hero tanpa arti status tidak ikut biru izin', function () {
+    expect(file_get_contents(resource_path('js/pages/kelas-saya/Index.svelte')))
+        ->not->toContain('g-tone-blue')
+        ->and(file_get_contents(resource_path('js/pages/orang-tua/Index.svelte')))
+        ->not->toContain('g-tone-blue');
 });

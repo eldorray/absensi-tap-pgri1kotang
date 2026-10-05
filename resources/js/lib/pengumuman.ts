@@ -107,7 +107,7 @@ export function labelWaktu(iso: string | null): string {
  * berwarna sama, dan kartu yang bersebelahan jarang kembar.
  */
 const SAMPUL = [
-    'bg-[var(--g-blue-c)] text-[var(--g-blue-ink-2)]',
+    'bg-[var(--g-sky-c)] text-[var(--g-sky-ink-2)]',
     'bg-[var(--g-yellow-c)] text-[var(--g-yellow-ink-2)]',
     'bg-[var(--g-green-c)] text-[var(--g-green-ink-2)]',
     'bg-[var(--g-red-c)] text-[var(--g-red-ink-2)]',

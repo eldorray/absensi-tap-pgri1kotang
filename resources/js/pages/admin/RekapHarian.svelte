@@ -70,9 +70,9 @@
         hadir: 'bg-[var(--g-green-c)] text-[var(--g-green-ink)]',
         terlambat: 'bg-[var(--g-yellow-c)] text-[var(--g-yellow-ink)]',
         alfa: 'bg-[var(--g-red-c)] text-[var(--g-red-ink)]',
-        izin: 'bg-[var(--g-blue-c)] text-[var(--g-blue-ink)]',
-        sakit: 'bg-[var(--g-blue-c)] text-[var(--g-blue-ink)]',
-        cuti: 'bg-[var(--g-blue-c)] text-[var(--g-blue-ink)]',
+        izin: 'bg-[var(--g-sky-c)] text-[var(--g-sky-ink)]',
+        sakit: 'bg-[var(--g-sky-c)] text-[var(--g-sky-ink)]',
+        cuti: 'bg-[var(--g-sky-c)] text-[var(--g-sky-ink)]',
     };
 
     /** Ringkasan hanya menampilkan status yang benar-benar ada hari itu. */

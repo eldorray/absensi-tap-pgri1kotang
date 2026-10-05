@@ -48,7 +48,13 @@ export const tarikTutup: Action<HTMLElement, Opsi> = (node, awal) => {
             return;
         }
 
-        hentikan(p);
+        // Jari kedua tidak boleh menimpa tarikan yang sedang berjalan.
+        if (tarikan) {
+            return;
+        }
+
+        // Pegas yang masih memantul dibiarkan jalan: ketukan biasa tidak boleh
+        // membekukan panel di tengah jalan. Ia baru dihentikan di gerak().
         tarikan = {
             id: event.pointerId,
             awalY: event.clientY,
@@ -69,6 +75,7 @@ export const tarikTutup: Action<HTMLElement, Opsi> = (node, awal) => {
             }
 
             tarikan.aktif = true;
+            hentikan(p);
             tarikan.acuan = event.clientY - p.x;
             node.setPointerCapture(event.pointerId);
         }
@@ -96,6 +103,9 @@ export const tarikTutup: Action<HTMLElement, Opsi> = (node, awal) => {
             return;
         }
 
+        // Jari yang diam tidak mengirim pointermove; tanpa sampel saat lepas,
+        // lemparan yang sudah berhenti masih dihitung cepat dan sheet tertutup.
+        selesai.riwayat.push({ x: p.x, t: performance.now() });
         const v = kecepatan(selesai.riwayat);
 
         if (p.x + proyeksi(v, 0.99) > node.offsetHeight * 0.4) {

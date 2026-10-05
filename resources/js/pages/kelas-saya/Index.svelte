@@ -29,7 +29,7 @@
 <div
     class="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-5 safe-bottom sm:px-6"
 >
-    <section class="g-tile g-tone-blue">
+    <section class="g-tile g-tone-green">
         <UsersRound class="size-7" aria-hidden="true" />
         <h1 class="g-display text-[clamp(1.75rem,7vw,2.25rem)]">Kelas Saya</h1>
         <p>
