@@ -263,6 +263,19 @@ test('CSV periode memuat kolom telat kelas', function () {
         ->get(route('admin.rekap.export', ['mode' => 'periode', 'mulai' => '2026-09-01', 'selesai' => '2026-09-30']))
         ->streamedContent();
 
-    expect($isi)->toContain('"Telat kelas","Menit telat kelas"')
-        ->and($isi)->toContain(',0,0,2,8,');
+    expect($isi)->toContain('"Masuk kelas","Telat kelas","Menit telat kelas"')
+        ->and($isi)->toContain(',0,0,2,2,8,');
+});
+
+test('rekap menghitung jumlah hari masuk kelas per guru', function () {
+    $guru = User::factory()->create();
+    AbsensiKelas::factory()->telat(5)->create(['user_id' => $guru->id, 'tanggal' => '2026-09-01']);
+    AbsensiKelas::factory()->create(['user_id' => $guru->id, 'tanggal' => '2026-09-02']);
+    AbsensiKelas::factory()->create(['user_id' => $guru->id, 'tanggal' => '2026-09-03']);
+
+    $baris = app(RekapBulanan::class)(2026, 9, $guru->id)['baris'][0];
+
+    expect($baris['masuk_kelas'])->toBe(3)
+        ->and($baris['telat_kelas'])->toBe(1)
+        ->and($baris['menit_telat_kelas'])->toBe(5);
 });

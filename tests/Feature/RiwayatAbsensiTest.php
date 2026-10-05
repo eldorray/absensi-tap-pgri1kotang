@@ -137,6 +137,7 @@ test('riwayat guru memuat telat masuk kelas bulan itu', function () {
 
     $this->actingAs($guru)->get(route('riwayat.index'))
         ->assertInertia(fn ($page) => $page
+            ->where('ringkasan.masuk_kelas', 1)
             ->where('ringkasan.telat_kelas', 1)
             ->where('ringkasan.menit_telat_kelas', 6));
 });

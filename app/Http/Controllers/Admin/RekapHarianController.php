@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Absensi\MasukKelasHariIni;
 use App\Actions\Absensi\RekapHarian;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
@@ -17,12 +18,15 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RekapHarianController extends Controller
 {
-    public function index(Request $request, RekapHarian $rekapHarian): Response
+    public function index(Request $request, RekapHarian $rekapHarian, MasukKelasHariIni $masukKelasHariIni): Response
     {
         $tanggal = $this->tanggal($request);
 
         return Inertia::render('admin/RekapHarian', [
             'rekap' => $rekapHarian($tanggal),
+            'masukKelas' => $masukKelasHariIni(null, $tanggal),
+            // Hanya hari ini yang masih bisa berubah, jadi hanya itu yang dipantau ulang.
+            'pantauMasukKelas' => $tanggal->isToday(),
             'labelAnomali' => AnomaliAbsensi::label(),
         ]);
     }

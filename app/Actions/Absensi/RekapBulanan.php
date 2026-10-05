@@ -35,6 +35,7 @@ class RekapBulanan
      *         pulang: int,
      *         terlambat: int,
      *         menit_terlambat: int,
+     *         masuk_kelas: int,
      *         telat_kelas: int,
      *         menit_telat_kelas: int,
      *         persentase: float
@@ -71,6 +72,7 @@ class RekapBulanan
      *         pulang: int,
      *         terlambat: int,
      *         menit_terlambat: int,
+     *         masuk_kelas: int,
      *         telat_kelas: int,
      *         menit_telat_kelas: int,
      *         persentase: float
@@ -114,10 +116,9 @@ class RekapBulanan
             ->when($userId !== null, fn ($query) => $query->where('user_id', $userId))
             ->get()
             ->keyBy(fn (Absensi $absensi): string => $absensi->user_id.'|'.$absensi->tanggal->toDateString());
-        // Telat masuk kelas: hanya baris yang telat, dijumlah per guru.
-        $telatKelas = AbsensiKelas::query()
-            ->selectRaw('user_id, count(*) as hari, sum(menit_terlambat) as menit')
-            ->where('menit_terlambat', '>', 0)
+        // Masuk kelas per guru: jumlah hari, berapa yang telat, dan total menitnya.
+        $masukKelas = AbsensiKelas::query()
+            ->selectRaw('user_id, count(*) as masuk, sum(case when menit_terlambat > 0 then 1 else 0 end) as telat, sum(menit_terlambat) as menit')
             ->whereBetween('tanggal', [$mulai, $selesai])
             ->when($userId !== null, fn ($query) => $query->where('user_id', $userId))
             ->groupBy('user_id')
@@ -195,8 +196,9 @@ class RekapBulanan
                 'pulang' => $pulang,
                 'terlambat' => $terlambat,
                 'menit_terlambat' => $menitTerlambat,
-                'telat_kelas' => (int) ($telatKelas->get($guru->id)?->getAttribute('hari') ?? 0),
-                'menit_telat_kelas' => (int) ($telatKelas->get($guru->id)?->getAttribute('menit') ?? 0),
+                'masuk_kelas' => (int) ($masukKelas->get($guru->id)?->getAttribute('masuk') ?? 0),
+                'telat_kelas' => (int) ($masukKelas->get($guru->id)?->getAttribute('telat') ?? 0),
+                'menit_telat_kelas' => (int) ($masukKelas->get($guru->id)?->getAttribute('menit') ?? 0),
                 // Dibulatkan dua angka: dipakai apa adanya di laporan cetak.
                 'persentase' => $hariEfektif === 0
                     ? 0.0

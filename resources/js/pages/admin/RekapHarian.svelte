@@ -18,6 +18,8 @@
     import AppHead from '@/components/AppHead.svelte';
     import KonfirmasiDialog from '@/components/KonfirmasiDialog.svelte';
     import type { Konfirmasi } from '@/components/KonfirmasiDialog.svelte';
+    import MasukKelasPantauan from '@/components/MasukKelasPantauan.svelte';
+    import type { PantauanMasukKelas } from '@/components/MasukKelasPantauan.svelte';
     import TombolIkon from '@/components/TombolIkon.svelte';
     import { Badge } from '@/components/ui/badge';
     import { Button } from '@/components/ui/button';
@@ -42,6 +44,8 @@
     let {
         rekap,
         labelAnomali,
+        masukKelas = null,
+        pantauMasukKelas = false,
     }: {
         rekap: {
             tanggal: string;
@@ -49,6 +53,8 @@
             baris: Baris[];
         };
         labelAnomali: Record<string, string>;
+        masukKelas?: PantauanMasukKelas | null;
+        pantauMasukKelas?: boolean;
     } = $props();
 
     let cari = $state('');
@@ -173,7 +179,13 @@
                 </span>
             {/each}
         </div>
+    </section>
 
+    {#if masukKelas}
+        <MasukKelasPantauan {masukKelas} pantau={pantauMasukKelas} />
+    {/if}
+
+    <section class="g-tile g-tone-plain gap-3">
         <div class="relative">
             <Label for="cari-guru" class="sr-only">Cari guru</Label>
             <Search

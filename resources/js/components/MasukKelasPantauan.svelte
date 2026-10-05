@@ -27,7 +27,14 @@
         kelas: KelasPantauan[];
     };
 
-    let { masukKelas }: { masukKelas: PantauanMasukKelas } = $props();
+    let {
+        masukKelas,
+        pantau = true,
+    }: {
+        masukKelas: PantauanMasukKelas;
+        /** Muat ulang tiap 60 detik; matikan untuk tanggal lampau yang tidak berubah lagi. */
+        pantau?: boolean;
+    } = $props();
 
     let dilihat = $state<KelasPantauan | null>(null);
     let terbuka = $state(false);
@@ -74,6 +81,10 @@
     // menghitung seluruh dashboard per permintaan. Jadikan prop lain closure
     // kalau dashboard terasa berat.
     $effect(() => {
+        if (!pantau) {
+            return;
+        }
+
         const jeda = setInterval(() => {
             if (!document.hidden) {
                 router.reload({ only: ['masukKelas'] });

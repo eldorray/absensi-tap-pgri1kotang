@@ -42,6 +42,7 @@
             hadir: number;
             terlambat: number;
             menit_terlambat: number;
+            masuk_kelas: number;
             telat_kelas: number;
             menit_telat_kelas: number;
             izin: number;
@@ -199,16 +200,16 @@
                     {ringkasan.alfa}
                 </dd>
             </div>
-            {#if ringkasan.telat_kelas > 0}
+            {#if ringkasan.masuk_kelas > 0}
                 <div class="col-span-2 rounded-2xl bg-muted/70 p-3">
-                    <dt class="text-xs text-muted-foreground">
-                        Telat masuk kelas
-                    </dt>
+                    <dt class="text-xs text-muted-foreground">Masuk kelas</dt>
                     <dd class="mt-1 font-semibold tabular-nums">
-                        {ringkasan.telat_kelas}
-                        <span class="text-xs font-normal text-muted-foreground"
-                            >· {ringkasan.menit_telat_kelas} menit</span
-                        >
+                        {ringkasan.masuk_kelas}
+                        {#if ringkasan.telat_kelas > 0}<span
+                                class="text-xs font-normal text-muted-foreground"
+                                >· telat {ringkasan.telat_kelas} ({ringkasan.menit_telat_kelas}
+                                mnt)</span
+                            >{/if}
                     </dd>
                 </div>
             {/if}

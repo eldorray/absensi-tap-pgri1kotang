@@ -84,3 +84,16 @@ test('filter unit hanya memuat kelas aktif di unit itu', function () {
     expect(array_column(app(MasukKelasHariIni::class)($this->kantor->id)['kelas'], 'nama'))->toBe(['7A'])
         ->and(app(MasukKelasHariIni::class)()['kelas'])->toHaveCount(2);
 });
+
+test('tanggal lampau membaca absen hari itu dan kelas tanpa guru langsung kosong', function () {
+    $terisi = kelasDi($this->kantor, '7A', 7);
+    kelasDi($this->kantor, '8A', 8);
+    AbsensiKelas::factory()->create(['kelas_id' => $terisi->id, 'tanggal' => '2026-09-04']);
+    // Absen hari ini tidak boleh ikut terbaca untuk Jumat lalu.
+    AbsensiKelas::factory()->create(['kelas_id' => kelasDi($this->kantor, '9A', 9)->id]);
+
+    $hasil = app(MasukKelasHariIni::class)(null, Carbon::parse('2026-09-04'));
+
+    expect($hasil['lewat'])->toBeTrue()
+        ->and(array_column($hasil['kelas'], 'status', 'nama'))->toBe(['7A' => 'tepat', '8A' => 'kosong', '9A' => 'kosong']);
+});

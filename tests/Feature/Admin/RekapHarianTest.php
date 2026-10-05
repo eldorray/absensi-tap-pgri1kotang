@@ -5,9 +5,11 @@ use App\Enums\StatusIzin;
 use App\Enums\TipeIzin;
 use App\Models\Absensi;
 use App\Models\AbsensiAttempt;
+use App\Models\AbsensiKelas;
 use App\Models\HariLibur;
 use App\Models\Izin;
 use App\Models\JadwalKerja;
+use App\Models\Kelas;
 use App\Models\User;
 use Database\Seeders\JadwalKerjaSeeder;
 use Illuminate\Support\Carbon;
@@ -230,4 +232,28 @@ test('tombol reset ada di setiap baris guru yang sudah absen', function () {
         // Hanya baris yang sudah ada tapnya.
         ->toContain('{#if b.jam_masuk !== null}')
         ->toContain('rekapHarianReset(baris.user_id)');
+});
+
+test('rekap harian memuat panel masuk kelas untuk tanggal yang dipilih', function () {
+    JadwalKerja::query()->whereNull('user_id')->update(['jam_masuk_kelas' => '06:50:00']);
+    $kelas = Kelas::factory()->create(['nama' => '7A', 'tingkat' => 7]);
+    AbsensiKelas::factory()->telat(4)->create(['kelas_id' => $kelas->id, 'tanggal' => '2026-09-04']);
+    $admin = User::factory()->admin()->create();
+
+    $this->actingAs($admin)->get(route('admin.rekap-harian.index', ['tanggal' => '2026-09-04']))
+        ->assertInertia(fn ($p) => $p
+            ->where('masukKelas.kelas.0.status', 'telat')
+            ->where('masukKelas.kelas.0.guru.0.menitTerlambat', 4)
+            ->where('pantauMasukKelas', false));
+
+    $this->actingAs($admin)->get(route('admin.rekap-harian.index'))
+        ->assertInertia(fn ($p) => $p
+            ->where('masukKelas.kelas.0.status', 'kosong')
+            ->where('pantauMasukKelas', true));
+});
+
+test('rekap harian tanpa panel masuk kelas pada hari tanpa jam masuk kelas', function () {
+    $this->actingAs(User::factory()->admin()->create())
+        ->get(route('admin.rekap-harian.index'))
+        ->assertInertia(fn ($p) => $p->where('masukKelas', null));
 });

@@ -217,6 +217,6 @@ test('laporan cetak memuat kolom telat masuk kelas', function () {
     $this->actingAs(User::factory()->admin()->create())
         ->get(route('admin.rekap.cetak', ['tahun' => 2026, 'bulan' => 9]))
         ->assertOk()
-        ->assertSee('Telat kelas')
-        ->assertSee('4 menit');
+        ->assertSee('Masuk kelas')
+        ->assertSee('1 · telat 1 (4 mnt)');
 });

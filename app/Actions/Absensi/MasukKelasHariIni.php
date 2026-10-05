@@ -5,12 +5,13 @@ namespace App\Actions\Absensi;
 use App\Models\AbsensiKelas;
 use App\Models\JadwalKerja;
 use App\Models\Kelas;
+use Carbon\CarbonInterface;
 
 /**
- * Keadaan absen masuk kelas hari ini, per kelas.
+ * Keadaan absen masuk kelas pada satu tanggal (bawaan: hari ini), per kelas.
  *
- * Dipakai beranda guru (memilih kelas), dashboard admin (memantau kelas
- * kosong), dan push kelas kosong -- supaya ketiganya membaca aturan status
+ * Dipakai beranda guru (memilih kelas), dashboard admin dan rekap harian
+ * (memantau kelas kosong), dan push kelas kosong -- supaya semuanya membaca aturan status
  * yang sama. Status memakai menit_terlambat yang tersimpan, jadi tidak
  * berubah kalau admin mengganti jam batas sesudah guru absen.
  */
@@ -27,23 +28,24 @@ class MasukKelasHariIni
      *         status: 'tepat'|'telat'|'kosong'|'menunggu',
      *         guru: list<array{nama: string, jam: string, menitTerlambat: int, absensiKelasId: int, adaFoto: bool}>
      *     }>
-     * }|null null kalau hari ini tanpa absen masuk kelas
+     * }|null null kalau tanggal itu tanpa absen masuk kelas
      */
-    public function __invoke(?int $kantorId = null): ?array
+    public function __invoke(?int $kantorId = null, ?CarbonInterface $tanggal = null): ?array
     {
-        $batas = JadwalKerja::batasMasukKelas(today());
+        $tanggal ??= today();
+        $batas = JadwalKerja::batasMasukKelas($tanggal);
 
         if ($batas === null) {
             return null;
         }
 
         // Kelas dihitung kosong mulai menit yang sama dengan saat
-        // menit_terlambat pertama kali bernilai 1.
+        // menit_terlambat pertama kali bernilai 1. Tanggal lampau selalu lewat.
         $lewat = now()->greaterThanOrEqualTo($batas->addMinute());
 
         $absens = AbsensiKelas::query()
             ->with('user:id,name')
-            ->whereDate('tanggal', today())
+            ->whereDate('tanggal', $tanggal)
             ->orderBy('created_at')
             ->orderBy('id')
             ->get()

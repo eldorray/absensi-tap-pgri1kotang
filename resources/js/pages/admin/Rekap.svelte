@@ -32,6 +32,7 @@
         hari_efektif: number;
         terlambat: number;
         menit_terlambat: number;
+        masuk_kelas: number;
         telat_kelas: number;
         menit_telat_kelas: number;
         persentase: number;
@@ -161,6 +162,13 @@
         }
     }
 
+    /** "15 · telat 3 (24 mnt)": jumlah masuk kelas beserta telatnya, satu kolom. */
+    function ringkasMasukKelas(baris: Baris): string {
+        return baris.telat_kelas > 0
+            ? `${baris.masuk_kelas} · telat ${baris.telat_kelas} (${baris.menit_telat_kelas} mnt)`
+            : String(baris.masuk_kelas);
+    }
+
     function judulAnomali(hari: Hari): string {
         return hari.anomali.length > 0
             ? `${hari.label} · ${hari.anomali.join(', ')}`
@@ -287,10 +295,7 @@
                                 >Menit terlambat</th
                             >
                             <th class="px-2 py-2 text-right font-medium"
-                                >Telat kelas</th
-                            >
-                            <th class="px-2 py-2 text-right font-medium"
-                                >Menit telat kelas</th
+                                >Masuk kelas</th
                             >
                             <th class="px-2 py-2 text-right font-medium"
                                 >Izin/Sakit/Cuti</th
@@ -325,10 +330,7 @@
                                     >{baris.menit_terlambat}</td
                                 >
                                 <td class="px-2 py-2 text-right tabular-nums"
-                                    >{baris.telat_kelas}</td
-                                >
-                                <td class="px-2 py-2 text-right tabular-nums"
-                                    >{baris.menit_telat_kelas}</td
+                                    >{ringkasMasukKelas(baris)}</td
                                 >
                                 <td class="px-2 py-2 text-right tabular-nums"
                                     >{(baris.ringkasan.izin ?? 0) +
@@ -348,7 +350,7 @@
                         {:else}
                             <tr
                                 ><td
-                                    colspan="10"
+                                    colspan="9"
                                     class="px-2 py-4 text-center text-muted-foreground"
                                     >Belum ada akun guru.</td
                                 ></tr
@@ -439,7 +441,9 @@
                                 .ringkasan.terlambat ?? 0} · Alfa {baris
                                 .ringkasan.alfa ?? 0} · Izin {baris.ringkasan
                                 .izin ?? 0} · Sakit {baris.ringkasan.sakit ?? 0} ·
-                            Cuti {baris.ringkasan.cuti ?? 0} · Telat kelas {baris.telat_kelas}</span
+                            Cuti {baris.ringkasan.cuti ?? 0} · Masuk kelas {ringkasMasukKelas(
+                                baris,
+                            )}</span
                         >
                     </li>{/each}
             </ul>
