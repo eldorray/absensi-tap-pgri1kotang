@@ -32,14 +32,14 @@
     const { isMobile, state } = getContext<SidebarContext>(SIDEBAR_CONTEXT);
 
     const base =
-        'peer/menu-button ring-sidebar-ring flex w-full items-center gap-2 overflow-hidden rounded-full p-2 pl-3 text-left text-sm outline-hidden transition-[width,height,padding,background-color] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0';
+        'peer/menu-button ring-sidebar-ring flex w-full items-center gap-2 overflow-hidden rounded-lg p-2 pl-3 text-left text-sm outline-hidden transition-[width,height,padding,background-color] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-semibold data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0';
     const sizeClasses: Record<Size, string> = {
         default: 'h-10 text-sm',
         lg: 'h-12 text-sm group-data-[collapsible=icon]:p-0!',
     };
 
     const classes = () => {
-        const activeClasses = isActive ? 'bg-sidebar-accent font-medium text-sidebar-accent-foreground' : '';
+        const activeClasses = isActive ? 'bg-sidebar-accent font-semibold text-sidebar-accent-foreground' : '';
         return cn(base, sizeClasses[size], activeClasses, className);
     };
 </script>

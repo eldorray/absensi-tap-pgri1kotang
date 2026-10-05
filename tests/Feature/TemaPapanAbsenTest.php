@@ -62,3 +62,17 @@ test('sheet bawah ditarik turun hanya dari pegangannya', function () {
         ->and($profil)
         ->toContain('data-tarik');
 });
+
+test('sidebar admin gelap dengan badge kuning', function () {
+    $css = file_get_contents(resource_path('css/app.css'));
+    $navMain = file_get_contents(resource_path('js/components/NavMain.svelte'));
+    $tombol = file_get_contents(resource_path('js/components/ui/sidebar/SidebarMenuButton.svelte'));
+
+    expect($css)
+        ->toContain('--sidebar-background: #18201b;')
+        ->and($navMain)
+        ->toContain('bg-[var(--g-amber)]')
+        ->toContain('text-[var(--g-amber-ink)]')
+        ->and($tombol)
+        ->not->toContain('rounded-full p-2');
+});
