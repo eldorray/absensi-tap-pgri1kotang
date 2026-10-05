@@ -100,5 +100,9 @@ test('jempol scrollbar tidak bergaris warna latar di sidebar gelap', function ()
 
     expect($css)
         ->toContain('background-clip: padding-box;')
+        // Scrollbar overlay bawaan browser mengabaikan ::-webkit-scrollbar;
+        // tanpa warna standar ia tampil putih di sidebar gelap.
+        ->toContain("[data-sidebar='content'] {")
+        ->toContain('scrollbar-color: #3a4a3e transparent;')
         ->not->toContain('border: 3px solid var(--g-bg);');
 });

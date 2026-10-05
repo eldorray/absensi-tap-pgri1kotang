@@ -386,6 +386,13 @@
         color: #a3ad9d;
     }
 
+    /* Scrollbar overlay bawaan browser mengabaikan ::-webkit-scrollbar dan
+       tampil putih di atas sidebar gelap; warna standar ini yang dipakainya. */
+    [data-sidebar='content'] {
+        scrollbar-color: #3a4a3e transparent;
+        scrollbar-width: thin;
+    }
+
     /* Isi berformat pengumuman: editor admin dan tampilan guru memakai
        gaya yang sama, jadi yang ditulis admin persis yang dibaca guru. */
     .isi-kaya {
