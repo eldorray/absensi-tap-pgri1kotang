@@ -227,3 +227,22 @@ test('beranda guru memakai garis jendela, tombol tap lebar, dan daftar status', 
         // Kartu masuk kelas jadi tombol aksi; statusnya di daftar status.
         ->not->toContain('<section class="g-tile');
 });
+
+test('komponen bersama dan judul admin mengikuti skala desain A', function () {
+    foreach ([
+        'js/components/ui/card/Card.svelte',
+        'js/components/ui/dialog/DialogContent.svelte',
+        'js/components/ui/dropdown-menu/DropdownMenuItem.svelte',
+        'js/components/ui/select/SelectItem.svelte',
+    ] as $file) {
+        expect(file_get_contents(resource_path($file)))
+            ->not->toContain('rounded-[28px]')
+            ->not->toContain('rounded-[10px]');
+    }
+
+    foreach (['js/pages/admin/Izin.svelte', 'js/pages/admin/IzinOrangTua.svelte'] as $file) {
+        expect(file_get_contents(resource_path($file)))
+            ->not->toContain('font-black')
+            ->toContain('font-display');
+    }
+});

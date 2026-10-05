@@ -56,7 +56,9 @@
 <div class="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6">
     <section class="g-tile g-tone-plain gap-4">
         <div>
-            <h1 class="text-xl font-black">Pengajuan izin guru</h1>
+            <h1 class="font-display text-2xl font-bold tracking-tight">
+                Pengajuan izin guru
+            </h1>
             <p class="mt-1 text-sm text-muted-foreground">
                 Periksa pengajuan izin, sakit, atau cuti dari guru.
             </p>

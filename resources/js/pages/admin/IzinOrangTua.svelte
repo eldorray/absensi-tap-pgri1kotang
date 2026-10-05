@@ -73,7 +73,9 @@
                     >
                         Kesiswaan
                     </p>
-                    <h1 class="mt-1 text-xl font-black">
+                    <h1
+                        class="mt-1 font-display text-2xl font-bold tracking-tight"
+                    >
                         Pengajuan izin orang tua
                     </h1>
                     <p class="mt-1 max-w-2xl text-sm text-muted-foreground">

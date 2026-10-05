@@ -26,7 +26,7 @@
 
     const classes = () =>
         cn(
-            'flex w-full cursor-pointer select-none items-center rounded-[10px] px-2 py-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground',
+            'flex w-full cursor-pointer select-none items-center rounded-md px-2 py-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground',
             className,
         );
 </script>
