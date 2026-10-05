@@ -194,3 +194,13 @@ test('kartu geser memutuskan lewat geser atau tombol', function () {
         ->toContain("lempar('setujui')")
         ->toContain("lempar('tolak')");
 });
+
+test('garis jendela absen dihitung dari jadwal yang sama dengan server', function () {
+    $lib = file_get_contents(resource_path('js/lib/jendela-absen.ts'));
+
+    expect($lib)
+        ->toContain('export function segmenJendela(')
+        // Batas tepat waktu = jam masuk + toleransi, sama dengan CatatAbsensi.
+        ->toContain('menit(jadwal.jam_masuk) + toleransi')
+        ->toContain('mnt lagi batas tepat');
+});

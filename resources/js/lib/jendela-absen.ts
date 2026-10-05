@@ -108,3 +108,69 @@ export function statusJendela(
         konfirmasiPulangCepat: sekarang < menit(jadwal.jam_pulang),
     };
 }
+
+function jam(menitHari: number): string {
+    const h = Math.floor(menitHari / 60);
+    const m = menitHari % 60;
+
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+export type SegmenJendela = {
+    /** Batas tiap segmen dan posisi sekarang, dalam persen panjang garis. */
+    tepatSampai: number;
+    terlambatSampai: number;
+    pulangMulai: number;
+    sekarang: number;
+    batasTepat: string;
+    keterangan: string;
+    nada: 'tepat' | 'telat' | 'netral';
+};
+
+/**
+ * Garis jendela absen di beranda guru: dari buka absen masuk sampai
+ * setengah jam setelah jam pulang.
+ *
+ * Batas tepat waktu = jam masuk + toleransi, sama dengan
+ * CatatAbsensi::statusMasuk (lewat dari menit itu tercatat terlambat).
+ */
+export function segmenJendela(
+    jadwal: JadwalHariIni,
+    toleransi: number,
+    sekarang: number,
+): SegmenJendela {
+    const awal = menit(jadwal.buka_masuk);
+    const akhir = menit(jadwal.jam_pulang) + 30;
+    const batas = menit(jadwal.jam_masuk) + toleransi;
+    const tutup = menit(jadwal.tutup_masuk);
+    const pulang = menit(jadwal.buka_pulang);
+    const persen = (m: number): number =>
+        Math.max(0, Math.min(100, ((m - awal) / (akhir - awal)) * 100));
+
+    let keterangan: string;
+    let nada: SegmenJendela['nada'] = 'netral';
+
+    if (sekarang < awal) {
+        keterangan = `Absen masuk buka ${jadwal.buka_masuk}`;
+    } else if (sekarang < batas) {
+        keterangan = `${batas - sekarang} mnt lagi batas tepat`;
+        nada = 'tepat';
+    } else if (sekarang < tutup) {
+        keterangan = `Terlambat · ditutup ${jadwal.tutup_masuk}`;
+        nada = 'telat';
+    } else if (sekarang < pulang) {
+        keterangan = `Absen pulang buka ${jadwal.buka_pulang}`;
+    } else {
+        keterangan = 'Absen pulang sudah dibuka';
+    }
+
+    return {
+        tepatSampai: persen(batas),
+        terlambatSampai: persen(tutup),
+        pulangMulai: persen(pulang),
+        sekarang: persen(sekarang),
+        batasTepat: jam(batas),
+        keterangan,
+        nada,
+    };
+}
