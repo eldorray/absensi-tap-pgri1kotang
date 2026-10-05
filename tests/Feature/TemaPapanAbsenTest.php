@@ -204,3 +204,23 @@ test('garis jendela absen dihitung dari jadwal yang sama dengan server', functio
         ->toContain('menit(jadwal.jam_masuk) + toleransi')
         ->toContain('mnt lagi batas tepat');
 });
+
+test('beranda guru memakai garis jendela, tombol tap lebar, dan daftar status', function () {
+    $beranda = file_get_contents(resource_path('js/pages/Dashboard.svelte'));
+    $tombol = file_get_contents(resource_path('js/components/TapButton.svelte'));
+    $kelas = file_get_contents(resource_path('js/components/MasukKelasKartu.svelte'));
+
+    expect($beranda)
+        ->toContain('segmenJendela(')
+        ->toContain('Jendela absen')
+        ->toContain('Status hari ini')
+        // Setelah tap masuk dan sebelum jam pulang: tanda tercatat, bukan tombol mati.
+        ->toContain('Masuk tercatat')
+        ->toContain('aria-label="Posisi pengumuman"')
+        ->and($tombol)
+        ->not->toContain('linear-gradient')
+        ->toContain('class="tap-ikon"')
+        ->and($kelas)
+        // Kartu masuk kelas jadi tombol aksi; statusnya di daftar status.
+        ->not->toContain('<section class="g-tile');
+});

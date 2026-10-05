@@ -23,12 +23,12 @@
     aria-haspopup="dialog"
     {onclick}
     class={cn(
-        'group flex flex-col gap-2 rounded-[1.75rem] border border-border/70 bg-card p-2 pb-3 text-left shadow-[0_8px_24px_rgba(15,23,42,0.06)] transition-transform duration-150 active:scale-[0.97] motion-reduce:transition-none',
+        'press group flex flex-col gap-2 rounded-2xl border border-border bg-card p-2 pb-3 text-left',
         className,
     )}
 >
     <span
-        class="relative block aspect-[4/3] overflow-hidden rounded-[1.25rem] {warnaSampul(
+        class="relative block aspect-[4/3] overflow-hidden rounded-lg {warnaSampul(
             pengumuman.id,
         )}"
         aria-hidden="true"
@@ -50,7 +50,7 @@
     <span class="grid gap-0.5 px-1.5">
         {#if baru}<span class="sr-only">Baru:</span>{/if}
         <span
-            class="line-clamp-2 text-[0.9375rem] leading-snug font-bold text-primary"
+            class="line-clamp-2 text-[0.9375rem] leading-snug font-bold text-foreground"
             >{pengumuman.judul}</span
         >
         <time

@@ -1,8 +1,6 @@
 <script lang="ts">
     import Camera from 'lucide-svelte/icons/camera';
-    import CircleCheck from 'lucide-svelte/icons/circle-check';
     import KameraSelfie from '@/components/KameraSelfie.svelte';
-    import { Badge } from '@/components/ui/badge';
     import { Button } from '@/components/ui/button';
     import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
@@ -40,15 +38,6 @@
     }
 
     const sisaMenit = $derived(menitDari(masukKelas.batas) - menitServer);
-    const nada = $derived(
-        masukKelas.absen
-            ? masukKelas.absen.menitTerlambat > 0
-                ? 'g-tone-yellow'
-                : 'g-tone-green'
-            : sisaMenit < 0
-              ? 'g-tone-red'
-              : 'g-tone-yellow',
-    );
     const labelWaktu = $derived(
         sisaMenit > 0
             ? `${sisaMenit} menit lagi`
@@ -63,44 +52,28 @@
     }
 </script>
 
-<section class="g-tile gap-2 {nada}">
-    <div class="flex flex-wrap items-center justify-between gap-2">
-        <h3 class="text-base">Masuk kelas</h3>
-        {#if masukKelas.absen}
-            <Badge variant="secondary"
-                >{masukKelas.absen.menitTerlambat > 0
-                    ? `Telat ${masukKelas.absen.menitTerlambat} menit`
-                    : 'Tepat waktu'}</Badge
-            >
-        {:else}
-            <Badge variant="outline">{labelWaktu}</Badge>
-        {/if}
-    </div>
-
-    {#if masukKelas.absen}
-        <p class="flex items-center gap-2 text-sm">
-            <CircleCheck class="size-4" aria-hidden="true" />
-            Masuk {masukKelas.absen.kelas} pukul {masukKelas.absen.jam}.
-        </p>
-    {:else if !masukKelas.sudahTapMasuk}
-        <p class="text-sm">
-            Batas masuk kelas {masukKelas.batas}. Tap masuk dulu, lalu absen di
-            kelas bersama siswa.
-        </p>
-    {:else}
-        <p class="text-sm">
-            Batas masuk kelas {masukKelas.batas}. Foto bersama siswa di kelas.
-        </p>
-        <Button
-            class="min-h-11 self-start"
-            disabled={deviceUuid === null}
-            onclick={() => (terbuka = true)}
+<!--
+    Statusnya (sudah masuk kelas, batas, telat) tampil di daftar "Status hari
+    ini" di beranda. Di sini hanya aksinya: muncul setelah tap masuk, selama
+    guru belum mencatat masuk kelas.
+-->
+{#if masukKelas.sudahTapMasuk && !masukKelas.absen}
+    <Button
+        variant="outline"
+        size="lg"
+        class="w-full gap-2.5 bg-card"
+        disabled={deviceUuid === null}
+        onclick={() => (terbuka = true)}
+    >
+        <Camera class="size-5" aria-hidden="true" />
+        Absen masuk kelas
+        <span
+            class="font-mono text-xs font-semibold {sisaMenit < 0
+                ? 'text-destructive'
+                : 'text-[var(--g-yellow-ink-2)]'}">{labelWaktu}</span
         >
-            <Camera class="size-4" aria-hidden="true" />
-            Absen masuk kelas
-        </Button>
-    {/if}
-</section>
+    </Button>
+{/if}
 
 <Dialog
     bind:open={terbuka}

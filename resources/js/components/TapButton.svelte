@@ -2,6 +2,7 @@
     import { page, router } from '@inertiajs/svelte';
     import type { PasskeyError } from '@laravel/passkeys';
     import { usePasskeyVerify } from '@laravel/passkeys/svelte';
+    import ArrowRight from 'lucide-svelte/icons/arrow-right';
     import CircleAlert from 'lucide-svelte/icons/circle-alert';
     import Fingerprint from 'lucide-svelte/icons/fingerprint';
     import MapPin from 'lucide-svelte/icons/map-pin';
@@ -46,6 +47,12 @@
         verifikasi: 'Verifikasi sidik jari…',
         kirim: 'Mengirim…',
     } as const;
+    /** Baris kecil di bawah label: cara tap ini diverifikasi. */
+    const keterangan = $derived(
+        punyaPasskey
+            ? 'Sidik jari · lokasi GPS'
+            : 'Lokasi GPS · tanpa biometrik',
+    );
     let konfirmasi = $state<Konfirmasi | null>(null);
     let pesanGalat = $state('');
     let posisi: GeolocationPosition | null = null;
@@ -218,23 +225,29 @@
         class="tap"
         onclick={tekan}
         disabled={disabled || sedangProses}
+        aria-busy={sedangProses}
     >
-        {#if tahap}
-            <Spinner />
-            {labelTahap[tahap]}
-        {:else}
-            {#if punyaPasskey}
-                <Fingerprint class="size-6" aria-hidden="true" />
+        <span class="tap-ikon" aria-hidden="true">
+            {#if tahap}
+                <Spinner />
+            {:else if punyaPasskey}
+                <Fingerprint class="size-8" />
             {:else}
-                <MapPin class="size-6" aria-hidden="true" />
+                <MapPin class="size-8" />
             {/if}
-            {label}
+        </span>
+        <span class="tap-teks">
+            <span class="tap-label">{tahap ? labelTahap[tahap] : label}</span>
+            <span class="tap-sub">{keterangan}</span>
+        </span>
+        {#if !tahap}
+            <ArrowRight class="size-5 shrink-0" aria-hidden="true" />
         {/if}
     </button>
 
     {#if pesanGalat}
         <p
-            class="flex items-start gap-2 rounded-2xl bg-[var(--g-red-c)] px-4 py-3 text-sm font-medium text-[var(--g-red-ink)]"
+            class="flex items-start gap-2 rounded-xl border border-[var(--g-red-line)] bg-[var(--g-red-c)] px-4 py-3 text-sm font-medium text-[var(--g-red-ink)]"
             role="alert"
         >
             <CircleAlert class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
@@ -246,40 +259,62 @@
 <KonfirmasiDialog bind:permintaan={konfirmasi} />
 
 <style>
+    /* Tombol tap desain A: selebar layar, rata kiri, tekan lalu memantul. */
     .tap {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
+        gap: 1rem;
         width: 100%;
-        min-height: 5.5rem;
-        border-radius: 28px;
-        background: linear-gradient(
-            115deg,
-            var(--g-lime) 0%,
-            var(--g-lime-2) 100%
-        );
-        color: var(--g-lime-ink);
-        font-size: 1.125rem;
-        font-weight: 700;
-        letter-spacing: -0.01em;
+        min-height: 6rem;
+        padding: 1.125rem 1.25rem;
+        border-radius: 12px;
+        background: var(--g-blue);
+        color: var(--g-on-blue);
+        text-align: left;
         /* Cegah double-tap zoom, seleksi teks, dan kilatan tap di mobile. */
         touch-action: manipulation;
         user-select: none;
         transition:
-            border-radius 0.5s var(--g-emphasized),
-            transform 0.3s var(--g-emphasized);
+            transform var(--dur) var(--spring),
+            opacity 0.2s ease;
     }
 
-    .tap:active {
-        transform: scale(0.98);
-    }
-
-    .tap:hover:not(:disabled) {
-        border-radius: 56px 28px 56px 28px;
+    .tap:active:not(:disabled) {
+        transform: scale(0.97);
+        transition-duration: 90ms;
     }
 
     .tap:disabled {
         opacity: 0.55;
+    }
+
+    .tap-ikon {
+        display: grid;
+        flex: none;
+        place-items: center;
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--g-on-blue) 14%, transparent);
+    }
+
+    .tap-teks {
+        display: grid;
+        flex: 1;
+        gap: 0.3rem;
+        min-width: 0;
+    }
+
+    .tap-label {
+        font-family: var(--font-display);
+        font-size: 1.625rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: 0.02em;
+    }
+
+    .tap-sub {
+        font-size: 0.8125rem;
+        opacity: 0.85;
     }
 </style>
