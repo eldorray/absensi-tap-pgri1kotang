@@ -246,3 +246,59 @@ test('komponen bersama dan judul admin mengikuti skala desain A', function () {
             ->toContain('font-display');
     }
 });
+
+test('halaman guru, orang tua, auth, dan settings tanpa warna mentah atau radius lama', function () {
+    $berkas = [
+        'js/components/GuruProfileSheet.svelte',
+        'js/components/PengumumanDetail.svelte',
+        'js/components/TombolIkon.svelte',
+        'js/components/InputError.svelte',
+        'js/components/DeleteUser.svelte',
+        'js/components/TwoFactorSetupModal.svelte',
+        'js/pages/orang-tua/Index.svelte',
+        'js/pages/orang-tua/Izin.svelte',
+        'js/pages/auth/Login.svelte',
+        'js/pages/auth/ForgotPassword.svelte',
+        'js/pages/auth/VerifyEmail.svelte',
+        'js/pages/settings/Profile.svelte',
+        'js/pages/Welcome.svelte',
+    ];
+
+    foreach ($berkas as $file) {
+        $isi = file_get_contents(resource_path($file));
+
+        expect(preg_match('/(?:bg|text|border|ring)-(?:emerald|red|amber|green|sky|blue|rose|zinc)-\d{2,3}/', $isi))
+            ->toBe(0, "$file masih memakai warna Tailwind mentah")
+            // Sheet bawah memang memakai rounded-t-[1.25rem] (aturan gaya 2).
+            ->and(preg_match('/rounded-\[(?:\d*\.)?\d+rem\]|rounded-t-\[(?!1\.25rem)[^\]]+\]|rounded-\[(?:28|32)px\]/', $isi))
+            ->toBe(0, "$file masih memakai radius lama")
+            ->and($isi)->not->toContain('font-black');
+    }
+});
+
+test('sisa temuan kecil review tahap 1-2 sudah dibereskan', function () {
+    $css = file_get_contents(resource_path('css/app.css'));
+
+    expect($css)
+        // Pegangan sheet tidak menggulir halaman dan tidak memblok teks.
+        ->toContain("[data-tarik] {")
+        ->toContain('user-select: none;')
+        ->toContain('--sidebar-primary-foreground: var(--g-on-blue);')
+        ->and(file_get_contents(resource_path('js/components/ui/sheet/SheetContent.svelte')))
+        ->toContain('duration: reduceMotion ? 0 : 200')
+        ->and(file_get_contents(resource_path('js/lib/pegas.ts')))
+        ->toContain('Math.max(0, Math.min(0.064')
+        ->and(file_get_contents(base_path('vite.config.ts')))
+        ->toContain('weights: [400, 500, 600, 700, 800]')
+        ->and(file_get_contents(resource_path('views/app.blade.php')))
+        ->toContain('content="#f4f1ea"')
+        ->toContain('content="#121712"')
+        ->and(file_get_contents(public_path('manifest.webmanifest')))
+        ->toContain('"theme_color": "#f4f1ea"')
+        ->and(file_get_contents(resource_path('js/components/GuruBottomNavigation.svelte')))
+        ->toContain('bg-card/95')
+        ->and(file_get_contents(resource_path('js/components/PengumumanDetail.svelte')))
+        ->toContain('data-tarik')
+        ->and(file_get_contents(resource_path('js/pages/orang-tua/Index.svelte')))
+        ->toContain('data-tarik');
+});

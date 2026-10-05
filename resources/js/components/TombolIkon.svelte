@@ -23,9 +23,9 @@
     // Latar berwarna baru muncul saat hover agar deret ikon tidak ramai.
     const warna: Record<Nada, string> = {
         netral: 'text-muted-foreground hover:bg-muted hover:text-foreground',
-        biru: 'text-blue-600/85 hover:bg-blue-500/10 hover:text-blue-600 dark:text-blue-400/85 dark:hover:text-blue-400',
-        kuning: 'text-amber-700/85 hover:bg-amber-500/10 hover:text-amber-700 dark:text-amber-400/85 dark:hover:text-amber-400',
-        hijau: 'text-emerald-700/85 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400/85 dark:hover:text-emerald-400',
+        biru: 'text-[var(--g-sky-ink-2)]/85 hover:bg-[var(--g-sky-c)] hover:text-[var(--g-sky-ink-2)]',
+        kuning: 'text-[var(--g-yellow-ink-2)]/85 hover:bg-[var(--g-yellow-c)] hover:text-[var(--g-yellow-ink-2)]',
+        hijau: 'text-[var(--g-green-ink-2)]/85 hover:bg-[var(--g-green-c)] hover:text-[var(--g-green-ink-2)]',
         merah: 'text-destructive/85 hover:bg-destructive/10 hover:text-destructive',
     };
 

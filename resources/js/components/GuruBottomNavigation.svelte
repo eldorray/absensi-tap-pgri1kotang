@@ -88,7 +88,7 @@
 <Sheet bind:open={terbuka}>
     <SheetContent
         side="bottom"
-        class="inset-x-0 mx-auto h-fit max-h-[80svh] w-full max-w-lg gap-0 rounded-t-[1.25rem] border-x border-t border-border bg-popover/95 p-0 backdrop-blur-xl backdrop-saturate-150"
+        class="inset-x-0 mx-auto h-fit max-h-[80svh] w-full max-w-lg gap-0 rounded-t-[1.25rem] border-x border-t border-border bg-card/95 p-0 backdrop-blur-xl backdrop-saturate-150"
     >
         <div data-tarik class="touch-none px-5 pt-3 pb-2">
             <div

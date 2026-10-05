@@ -81,9 +81,9 @@
 <Sheet bind:open>
     <SheetContent
         side="bottom"
-        class="inset-x-0 mx-auto h-fit max-h-[85svh] w-full max-w-lg gap-0 overflow-hidden rounded-t-[2rem] border-x border-t border-border/70 bg-background px-0 pt-0 pb-0 shadow-[0_-24px_80px_rgba(15,23,42,0.24)]"
+        class="inset-x-0 mx-auto h-fit max-h-[85svh] w-full max-w-lg gap-0 overflow-hidden rounded-t-[1.25rem] border-x border-t border-border/70 bg-background px-0 pt-0 pb-0 shadow-[var(--g-shadow)]"
     >
-        <div class="shrink-0 px-5 pt-3">
+        <div data-tarik class="shrink-0 px-5 pt-3">
             <div
                 class="mx-auto h-1.5 w-11 rounded-full bg-muted-foreground/20"
             ></div>
@@ -108,7 +108,7 @@
                     aria-hidden={indeks !== aktif}
                 >
                     <div
-                        class="relative mb-4 grid h-28 place-items-center overflow-hidden rounded-[1.5rem] {warnaSampul(
+                        class="relative mb-4 grid h-28 place-items-center overflow-hidden rounded-2xl {warnaSampul(
                             pengumuman.id,
                         )}"
                         aria-hidden="true"

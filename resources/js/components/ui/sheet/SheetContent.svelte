@@ -38,6 +38,10 @@
 
     const close = () => setOpen(false);
 
+    const reduceMotion =
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ??
+        false;
+
     // An ancestor with transform/filter/backdrop-filter becomes the containing
     // block for `position: fixed`, so the overlay must live on <body>.
     function portal(node: HTMLElement) {
@@ -54,9 +58,6 @@
      * turun dari posisi itu, tidak melompat balik dulu.
      */
     function geser(node: HTMLElement, { keluar }: { keluar: boolean }) {
-        const reduceMotion = window.matchMedia?.(
-            '(prefers-reduced-motion: reduce)',
-        ).matches;
         const sekarang = getComputedStyle(node).transform;
         const dasar = sekarang === 'none' ? '' : sekarang;
         const mendatar = side === 'left' || side === 'right';
@@ -80,7 +81,9 @@
             class="fixed inset-0 border-0 bg-black/40"
             aria-label="Tutup"
             onclick={close}
-            transition:fade={{ duration: 200 }}
+            transition:fade={{
+                duration: reduceMotion ? 0 : 200,
+            }}
         ></button>
         <div
             class={cn(

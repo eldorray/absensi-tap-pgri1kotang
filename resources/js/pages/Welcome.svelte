@@ -171,7 +171,7 @@
         </section>
 
         <section
-            class="mt-4 rounded-[32px] bg-primary px-6 py-9 text-primary-foreground sm:px-9 sm:py-11"
+            class="mt-4 rounded-2xl bg-primary px-6 py-9 text-primary-foreground sm:px-9 sm:py-11"
         >
             <h2 class="g-display text-[1.375rem]">Sehari-harinya begini</h2>
 
@@ -191,7 +191,7 @@
         </section>
 
         <section
-            class="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-[28px] border border-border px-6 py-6 sm:px-9"
+            class="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border px-6 py-6 sm:px-9"
         >
             <p class="ukuran-baca text-[0.9375rem] text-muted-foreground">
                 Admin dan TU masuk lewat pintu yang sama, lalu mengurus jadwal,

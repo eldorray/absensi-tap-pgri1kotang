@@ -239,7 +239,7 @@
                                     class="relative block h-auto border-l border-border px-3 hover:bg-muted"
                                 >
                                     {#if copied}
-                                        <Check class="w-4 text-green-500" />
+                                        <Check class="w-4 text-primary" />
                                     {:else}
                                         <Copy class="w-4" />
                                     {/if}

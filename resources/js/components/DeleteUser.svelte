@@ -24,9 +24,9 @@
         description="Hapus akun beserta semua datanya"
     />
     <div
-        class="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10"
+        class="space-y-4 rounded-lg border border-[var(--g-red-line)] bg-[var(--g-red-c)] p-4"
     >
-        <div class="relative space-y-0.5 text-red-600 dark:text-red-100">
+        <div class="relative space-y-0.5 text-[var(--g-red-ink)]">
             <p class="font-medium">Peringatan</p>
             <p class="text-sm">
                 Hati-hati, tindakan ini tidak bisa dibatalkan.

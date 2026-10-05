@@ -51,7 +51,8 @@ export function jalankan(
     let terakhir = performance.now();
 
     const langkah = (sekarang: number): void => {
-        const dt = Math.min(0.064, (sekarang - terakhir) / 1000);
+        // Stempel frame pertama bisa lebih awal dari performance.now() pemicunya.
+        const dt = Math.max(0, Math.min(0.064, (sekarang - terakhir) / 1000));
         terakhir = sekarang;
         const n = Math.max(1, Math.ceil(dt / 0.004));
         const h = dt / n;

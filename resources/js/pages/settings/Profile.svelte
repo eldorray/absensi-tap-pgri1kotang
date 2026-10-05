@@ -83,7 +83,7 @@
                     </p>
 
                     {#if page.props.status === 'verification-link-sent'}
-                        <div class="mt-2 text-sm font-medium text-green-600">
+                        <div class="mt-2 text-sm font-medium text-primary">
                             Tautan verifikasi baru sudah dikirim ke alamat email
                             kamu.
                         </div>

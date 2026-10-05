@@ -114,7 +114,7 @@
 
         <Button
             type="submit"
-            class="mt-1 min-h-14 w-full rounded-[1.35rem] text-base font-bold"
+            class="mt-1 min-h-14 w-full rounded-xl text-base font-bold"
             disabled={processing}
             data-test="login-button"
         >

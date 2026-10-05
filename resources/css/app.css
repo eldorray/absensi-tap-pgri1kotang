@@ -254,6 +254,7 @@
     --chart-5: #b7c48a;
     --sidebar-background: #0d110d;
     --sidebar-foreground: #d5dbcf;
+    --sidebar-primary-foreground: var(--g-on-blue);
     --sidebar-accent: #232c24;
     --sidebar-border: #232c24;
     --sidebar: #0d110d;
@@ -388,7 +389,12 @@
         font-weight: 600;
         letter-spacing: 0.08em;
         font-size: 0.6875rem;
-        color: #a3ad9d;
+    }
+
+    /* Pegangan bottom sheet: digeser jari, bukan menggulir atau memblok teks. */
+    [data-tarik] {
+        touch-action: none;
+        user-select: none;
     }
 
     /* Scrollbar overlay bawaan browser mengabaikan ::-webkit-scrollbar dan

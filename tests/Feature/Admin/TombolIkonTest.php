@@ -38,5 +38,5 @@ test('tombol ikon punya nama terbaca, kursor tangan, dan keadaan nonaktif', func
         ->toContain('disabled:pointer-events-none')
         // Warna hanya muncul saat hover supaya deret ikon tidak ramai.
         ->toContain('hover:bg-destructive/10 hover:text-destructive')
-        ->toContain('hover:bg-emerald-500/10');
+        ->toContain('hover:bg-[var(--g-green-c)]');
 });

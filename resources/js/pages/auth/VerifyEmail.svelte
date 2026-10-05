@@ -25,7 +25,7 @@
 <AppHead title="Verifikasi email" />
 
 {#if status === 'verification-link-sent'}
-    <div class="mb-4 text-center text-sm font-medium text-green-600">
+    <div class="mb-4 text-center text-sm font-medium text-primary">
         Tautan verifikasi baru sudah dikirim ke alamat email yang terdaftar.
     </div>
 {/if}

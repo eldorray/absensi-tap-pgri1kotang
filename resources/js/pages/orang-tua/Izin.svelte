@@ -111,7 +111,9 @@
                 >
                     Pemberitahuan sekolah
                 </p>
-                <h1 class="mt-1 text-xl font-black">Ajukan izin anak</h1>
+                <h1 class="mt-1 font-display text-2xl font-bold tracking-tight">
+                    Ajukan izin anak
+                </h1>
                 <p class="mt-1 text-sm text-muted-foreground">
                     Kirim pemberitahuan izin atau sakit untuk anak yang telah
                     ditautkan ke akun Anda.
@@ -268,7 +270,9 @@
     <section class="g-tile g-tone-plain">
         <div class="mb-3 flex items-center justify-between gap-3">
             <div>
-                <h2 class="font-black">Riwayat pengajuan</h2>
+                <h2 class="font-display text-lg font-bold">
+                    Riwayat pengajuan
+                </h2>
                 <p class="text-sm text-muted-foreground">
                     Status terbaru dari admin sekolah.
                 </p>

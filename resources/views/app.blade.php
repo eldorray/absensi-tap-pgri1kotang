@@ -8,8 +8,8 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <meta name="apple-mobile-web-app-title" content="{{ $namaAplikasi }}">
-        <meta name="theme-color" content="#2f6d21" media="(prefers-color-scheme: light)">
-        <meta name="theme-color" content="#1f4a1c" media="(prefers-color-scheme: dark)">
+        <meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
+        <meta name="theme-color" content="#121712" media="(prefers-color-scheme: dark)">
 
         <link rel="apple-touch-icon" sizes="180x180" href="/pwa-apple-touch.png">
         @if ($faviconAplikasi)

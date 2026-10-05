@@ -19,7 +19,7 @@ export default defineConfig({
             refresh: true,
             fonts: [
                 google('Public Sans', {
-                    weights: [400, 500, 600, 700],
+                    weights: [400, 500, 600, 700, 800],
                 }),
                 google('Bricolage Grotesque', {
                     weights: [600, 700, 800],

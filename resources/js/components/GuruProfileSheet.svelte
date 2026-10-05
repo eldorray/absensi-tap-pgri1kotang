@@ -100,7 +100,7 @@
                 onclick={props.onclick}
                 aria-expanded={props['aria-expanded']}
                 aria-label="Buka profil"
-                class="avatar-kotak avatar-kotak-header relative grid place-items-center rounded-2xl bg-primary text-sm font-extrabold text-primary-foreground shadow-[0_6px_18px_rgba(20,83,45,0.24)] ring-1 ring-white/20 transition duration-200 active:scale-95"
+                class="avatar-kotak avatar-kotak-header relative grid place-items-center rounded-2xl bg-primary text-sm font-extrabold text-primary-foreground shadow-[var(--g-shadow)] ring-1 ring-white/20 transition duration-200 active:scale-95"
             >
                 {#if user.avatar}<img
                         src={`/storage/${user.avatar}`}
@@ -108,7 +108,7 @@
                         class="foto-avatar rounded-2xl"
                     />{:else}{user.name.charAt(0).toUpperCase()}{/if}
                 <span
-                    class="absolute -right-0.5 -bottom-0.5 size-3.5 rounded-full border-2 border-background bg-emerald-500"
+                    class="absolute -right-0.5 -bottom-0.5 size-3.5 rounded-full border-2 border-background bg-[var(--g-green-ink-2)]"
                 ></span>
             </button>
         {/snippet}
@@ -116,7 +116,7 @@
 
     <SheetContent
         side="bottom"
-        class="inset-x-0 mx-auto h-fit max-h-[78svh] w-full max-w-lg gap-0 overflow-hidden rounded-t-[2rem] border-x border-t border-border/70 bg-background px-0 pt-0 pb-0 shadow-[0_-24px_80px_rgba(15,23,42,0.24)]"
+        class="inset-x-0 mx-auto h-fit max-h-[78svh] w-full max-w-lg gap-0 overflow-hidden rounded-t-[1.25rem] border-x border-t border-border/70 bg-background px-0 pt-0 pb-0 shadow-[var(--g-shadow)]"
     >
         <div
             data-tarik
@@ -149,7 +149,7 @@
         >
             {#if panel === 'menu'}
                 <section
-                    class="relative overflow-hidden rounded-[1.75rem] bg-primary p-5 text-primary-foreground shadow-sm"
+                    class="relative overflow-hidden rounded-2xl bg-primary p-5 text-primary-foreground shadow-sm"
                 >
                     <div
                         class="absolute -top-12 -right-10 size-36 rounded-full bg-white/10"
@@ -160,12 +160,12 @@
 
                     <div class="relative flex items-center gap-4">
                         <div
-                            class="avatar-kotak avatar-kotak-kartu grid shrink-0 place-items-center rounded-[1.35rem] bg-white/16 text-2xl font-extrabold ring-1 ring-white/25 backdrop-blur-sm"
+                            class="avatar-kotak avatar-kotak-kartu grid shrink-0 place-items-center rounded-xl bg-white/16 text-2xl font-extrabold ring-1 ring-white/25 backdrop-blur-sm"
                         >
                             {#if user.avatar}<img
                                     src={`/storage/${user.avatar}`}
                                     alt=""
-                                    class="foto-avatar rounded-[1.35rem]"
+                                    class="foto-avatar rounded-xl"
                                 />{:else}{user.name
                                     .charAt(0)
                                     .toUpperCase()}{/if}
@@ -202,7 +202,7 @@
                 </div>
 
                 <nav
-                    class="overflow-hidden rounded-[1.5rem] border border-border/70 bg-card shadow-sm"
+                    class="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm"
                     aria-label="Menu profil"
                 >
                     <button
@@ -211,7 +211,7 @@
                         class="group flex min-h-16 w-full items-center gap-3 px-4 py-3 text-left transition-colors active:bg-muted/80"
                     >
                         <span
-                            class="grid size-11 shrink-0 place-items-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                            class="grid size-11 shrink-0 place-items-center rounded-2xl bg-[var(--g-sky-c)] text-[var(--g-sky-ink-2)]"
                         >
                             <UserRound class="size-5" aria-hidden="true" />
                         </span>
@@ -236,7 +236,7 @@
                             class="group flex min-h-16 items-center gap-3 border-t border-border/60 px-4 py-3 transition-colors active:bg-muted/80"
                         >
                             <span
-                                class="grid size-11 shrink-0 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                                class="grid size-11 shrink-0 place-items-center rounded-2xl bg-[var(--g-green-c)] text-[var(--g-green-ink-2)]"
                             >
                                 <ShieldCheck
                                     class="size-5"
@@ -288,7 +288,7 @@
                     href={logout()}
                     as="button"
                     onclick={keluar}
-                    class="mt-4 flex min-h-16 w-full items-center justify-center gap-2.5 rounded-[1.35rem] border border-destructive/15 bg-destructive/8 px-4 font-bold text-destructive transition-colors active:bg-destructive/15"
+                    class="mt-4 flex min-h-16 w-full items-center justify-center gap-2.5 rounded-xl border border-destructive/15 bg-destructive/8 px-4 font-bold text-destructive transition-colors active:bg-destructive/15"
                     data-test="guru-logout-button"
                 >
                     <LogOut class="size-5" aria-hidden="true" />
@@ -315,11 +315,11 @@
                     }}
                 >
                     <div
-                        class="flex flex-col items-center gap-3 rounded-[1.5rem] bg-muted/60 p-4"
+                        class="flex flex-col items-center gap-3 rounded-2xl bg-muted/60 p-4"
                     >
                         <div class="relative">
                             <div
-                                class="avatar-kotak avatar-kotak-pratinjau grid place-items-center rounded-[1.75rem] bg-primary text-3xl font-extrabold text-primary-foreground"
+                                class="avatar-kotak avatar-kotak-pratinjau grid place-items-center rounded-2xl bg-primary text-3xl font-extrabold text-primary-foreground"
                             >
                                 {#if avatarUrl}<img
                                         src={avatarUrl}
@@ -391,7 +391,7 @@
 
                     <Button
                         type="submit"
-                        class="min-h-14 w-full rounded-[1.35rem] text-base font-bold"
+                        class="min-h-14 w-full rounded-xl text-base font-bold"
                         disabled={profil.processing}>Simpan perubahan</Button
                     >
                 </form>

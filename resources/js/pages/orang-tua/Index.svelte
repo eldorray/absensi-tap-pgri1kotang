@@ -79,10 +79,10 @@
     } = $props();
 
     const warna: Record<string, string> = {
-        hadir: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300',
-        sakit: 'bg-amber-500/14 text-amber-700 dark:text-amber-300',
-        izin: 'bg-sky-500/14 text-sky-700 dark:text-sky-300',
-        alpa: 'bg-rose-500/14 text-rose-700 dark:text-rose-300',
+        hadir: 'bg-[var(--g-green-c)] text-[var(--g-green-ink-2)]',
+        sakit: 'bg-[var(--g-yellow-c)] text-[var(--g-yellow-ink-2)]',
+        izin: 'bg-[var(--g-sky-c)] text-[var(--g-sky-ink-2)]',
+        alpa: 'bg-[var(--g-red-c)] text-[var(--g-red-ink-2)]',
         terlambat: 'bg-violet-500/14 text-violet-700 dark:text-violet-300',
     };
 
@@ -169,7 +169,7 @@
         <div class="flex items-start justify-between gap-4">
             <div class="grid gap-2">
                 <span
-                    class="grid size-12 place-items-center rounded-2xl bg-white/40 text-emerald-800 dark:bg-white/10 dark:text-emerald-200"
+                    class="grid size-12 place-items-center rounded-2xl bg-white/40 text-[var(--g-green-ink)] dark:bg-white/10"
                 >
                     <HeartHandshake class="size-6" aria-hidden="true" />
                 </span>
@@ -196,7 +196,7 @@
     {#if anak.length === 0}
         <section class="g-tile g-tone-plain items-center py-10 text-center">
             <span
-                class="grid size-16 place-items-center rounded-[1.5rem] bg-muted text-muted-foreground"
+                class="grid size-16 place-items-center rounded-2xl bg-muted text-muted-foreground"
             >
                 <UserRoundCheck class="size-8" aria-hidden="true" />
             </span>
@@ -246,7 +246,7 @@
             >
                 <div class="flex items-center gap-3">
                     <span
-                        class="grid size-14 shrink-0 place-items-center overflow-hidden rounded-[1.25rem] bg-white/35 text-xl font-black dark:bg-white/10"
+                        class="grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-white/35 text-xl font-extrabold dark:bg-white/10"
                     >
                         {#if siswaTerpilih.foto}
                             <img
@@ -326,7 +326,9 @@
                 <div class="grid grid-cols-3 gap-2">
                     {#each ['hadir', 'sakit', 'izin', 'alpa', 'terlambat'] as status (status)}
                         <div class="rounded-2xl bg-muted/70 p-3 text-center">
-                            <p class="text-2xl font-black tabular-nums">
+                            <p
+                                class="font-display text-2xl font-extrabold tabular-nums"
+                            >
                                 {ringkasan[status] ?? 0}
                             </p>
                             <p
@@ -358,7 +360,7 @@
                 <div class="grid gap-2">
                     {#each riwayat as item (item.id)}
                         <article
-                            class="rounded-[1.25rem] border border-border/70 bg-background p-3.5"
+                            class="rounded-xl border border-border/70 bg-background p-3.5"
                         >
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
@@ -389,7 +391,7 @@
                         </article>
                     {:else}
                         <div
-                            class="grid place-items-center gap-2 rounded-[1.25rem] bg-muted/55 px-4 py-8 text-center"
+                            class="grid place-items-center gap-2 rounded-xl bg-muted/55 px-4 py-8 text-center"
                         >
                             <CheckCircle2
                                 class="size-7 text-muted-foreground"
@@ -414,16 +416,18 @@
     >
         <SheetContent
             side="bottom"
-            class="inset-x-0 mx-auto max-h-[82dvh] w-full max-w-lg gap-0 overflow-y-auto rounded-t-[2rem] border-x border-t border-border/70 bg-background px-5 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[0_-24px_80px_rgba(15,23,42,0.24)]"
+            class="inset-x-0 mx-auto max-h-[82dvh] w-full max-w-lg gap-0 overflow-y-auto rounded-t-[1.25rem] border-x border-t border-border/70 bg-background px-5 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-[var(--g-shadow)]"
         >
-            <div
-                class="mx-auto mb-5 h-1.5 w-12 rounded-full bg-muted-foreground/25"
-                aria-hidden="true"
-            ></div>
+            <div data-tarik class="-mx-5 -mt-3 mb-2 px-5 pt-3 pb-3">
+                <div
+                    class="mx-auto h-1.5 w-12 rounded-full bg-muted-foreground/25"
+                    aria-hidden="true"
+                ></div>
+            </div>
             <SheetHeader class="pr-8 text-left">
                 <div class="flex items-center gap-3">
                     <span
-                        class="grid size-16 shrink-0 place-items-center overflow-hidden rounded-[1.4rem] bg-primary/12 text-2xl font-black text-primary"
+                        class="grid size-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-primary/12 text-2xl font-extrabold text-primary"
                     >
                         {#if siswaTerpilih.foto}
                             <img

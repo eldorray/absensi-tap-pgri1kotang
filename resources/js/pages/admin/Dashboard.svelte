@@ -71,7 +71,6 @@
 
     let {
         tanggal,
-        ringkasanHariIni,
         papanGuru,
         menungguPersetujuan,
         perluTindakan,
@@ -82,7 +81,6 @@
         masukKelas = null,
     }: {
         tanggal: string;
-        ringkasanHariIni: Record<string, number>;
         papanGuru: BarisPapan[];
         menungguPersetujuan: {
             izin: IzinMenunggu[];
