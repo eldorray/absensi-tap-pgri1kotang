@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\JadwalGuruController;
 use App\Http\Controllers\Admin\KantorController;
 use App\Http\Controllers\Admin\KelasController;
 use App\Http\Controllers\Admin\LanggananPushController;
+use App\Http\Controllers\Admin\MasukKelasController as AdminMasukKelasController;
 use App\Http\Controllers\Admin\OrangTuaController;
 use App\Http\Controllers\Admin\PengaturanController;
 use App\Http\Controllers\Admin\PengumumanController;
@@ -115,6 +116,7 @@ Route::middleware(['auth', 'verified', 'can:admin'])
         Route::post('langganan-push/tes', [LanggananPushController::class, 'tes'])
             ->middleware('throttle:6,1')
             ->name('langganan-push.tes');
+        Route::get('masuk-kelas/{absensiKelas}/foto', [AdminMasukKelasController::class, 'foto'])->name('masuk-kelas.foto');
         Route::get('izin', [AdminIzinController::class, 'index'])->name('izin.index');
         Route::patch('izin/{izin}', [AdminIzinController::class, 'update'])->name('izin.update');
         Route::get('izin-orang-tua', [AdminIzinOrangTuaController::class, 'index'])->name('izin-orang-tua.index');

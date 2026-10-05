@@ -10,6 +10,8 @@
     import ArrowRight from 'lucide-svelte/icons/arrow-right';
     import ShieldAlert from 'lucide-svelte/icons/shield-alert';
     import AppHead from '@/components/AppHead.svelte';
+    import MasukKelasPantauan from '@/components/MasukKelasPantauan.svelte';
+    import type { PantauanMasukKelas } from '@/components/MasukKelasPantauan.svelte';
     import NotifikasiPush from '@/components/NotifikasiPush.svelte';
     import { Badge } from '@/components/ui/badge';
     import { Button } from '@/components/ui/button';
@@ -42,6 +44,7 @@
         bulanIni,
         log,
         vapidPublicKey,
+        masukKelas = null,
     }: {
         tanggal: string;
         ringkasanHariIni: Record<string, number>;
@@ -50,6 +53,7 @@
         bulanIni: Record<string, number>;
         log: Log[];
         vapidPublicKey: string | null;
+        masukKelas?: PantauanMasukKelas | null;
     } = $props();
 
     const tanggalPanjang = new Intl.DateTimeFormat('id-ID', {
@@ -191,6 +195,10 @@
             </div>
         {/if}
     </section>
+
+    {#if masukKelas}
+        <MasukKelasPantauan {masukKelas} />
+    {/if}
 
     {#if tindakan.length > 0}
         <section class="g-tile g-tone-yellow gap-3">

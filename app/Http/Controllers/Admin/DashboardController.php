@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Absensi\MasukKelasHariIni;
 use App\Actions\Absensi\RekapHarian;
 use App\Enums\HasilTap;
 use App\Enums\Role;
@@ -38,7 +39,7 @@ class DashboardController extends Controller
      */
     private const JUMLAH_LOG = 12;
 
-    public function index(RekapHarian $rekapHarian): Response
+    public function index(RekapHarian $rekapHarian, MasukKelasHariIni $masukKelasHariIni): Response
     {
         $hariIni = $rekapHarian(Carbon::today());
 
@@ -69,6 +70,8 @@ class DashboardController extends Controller
                     ->whereDoesntHave('siswas')
                     ->count(),
             ],
+            // Semua unit: kepala sekolah memantau seluruh kelas dari akun admin.
+            'masukKelas' => $masukKelasHariIni(),
             'master' => [
                 'guru' => User::query()->where('role', Role::Guru)->count(),
                 'admin' => User::query()->where('role', Role::Admin)->count(),
