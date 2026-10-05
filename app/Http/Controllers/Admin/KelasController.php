@@ -7,6 +7,7 @@ use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SimpanKelasRequest;
 use App\Http\Requests\Admin\TempatkanSiswaRequest;
+use App\Models\AbsensiKelas;
 use App\Models\AnggotaKelas;
 use App\Models\GuruKelas;
 use App\Models\Kantor;
@@ -78,12 +79,16 @@ class KelasController extends Controller
     }
 
     /**
-     * Kelas yang pernah diisi siswa tidak dihapus, cukup dinonaktifkan:
-     * riwayat keanggotaan dan absensi menempel padanya.
+     * Kelas yang pernah diisi siswa atau dimasuki guru tidak dihapus, cukup
+     * dinonaktifkan: riwayat keanggotaan dan absensi menempel padanya, dan
+     * menghapusnya ikut menghapus absen masuk kelas lewat cascade.
      */
     public function destroy(Kelas $kelas): RedirectResponse
     {
-        if (AnggotaKelas::query()->where('kelas_id', $kelas->id)->exists()) {
+        $punyaRiwayat = AnggotaKelas::query()->where('kelas_id', $kelas->id)->exists()
+            || AbsensiKelas::query()->where('kelas_id', $kelas->id)->exists();
+
+        if ($punyaRiwayat) {
             $kelas->update(['is_active' => false]);
             Inertia::flash('toast', [
                 'type' => 'success',

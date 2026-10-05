@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Role;
+use App\Models\AbsensiKelas;
 use App\Models\AnggotaKelas;
 use App\Models\GuruKelas;
 use App\Models\Kantor;
@@ -198,4 +199,16 @@ test('kelas yang masih punya anggota tidak bisa dihapus', function () {
         ->assertRedirect();
 
     expect(Kelas::whereKey($kelas->id)->exists())->toBeTrue();
+});
+
+test('kelas yang punya riwayat absen masuk kelas dinonaktifkan, bukan dihapus', function () {
+    $kelas = Kelas::factory()->create();
+    AbsensiKelas::factory()->create(['kelas_id' => $kelas->id]);
+
+    $this->actingAs(User::factory()->admin()->create())
+        ->delete(route('admin.kelas.destroy', $kelas))
+        ->assertRedirect();
+
+    expect(Kelas::whereKey($kelas->id)->value('is_active'))->toBeFalse()
+        ->and(AbsensiKelas::where('kelas_id', $kelas->id)->count())->toBe(1);
 });

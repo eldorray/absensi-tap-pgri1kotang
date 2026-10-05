@@ -34,6 +34,17 @@ class HapusFotoMasukKelasLama extends Command
                 }
             });
 
+        // File yang barisnya sudah hilang lewat cascade (guru atau kelas dihapus)
+        // tidak terjangkau sapuan di atas; janji 60 hari ke orang tua tetap berlaku.
+        $batasWaktu = now()->subDays(AbsensiKelas::RETENSI_FOTO_HARI)->getTimestamp();
+
+        foreach ($disk->allFiles('absensi-kelas') as $path) {
+            if ($disk->lastModified($path) < $batasWaktu) {
+                $disk->delete($path);
+                $dihapus++;
+            }
+        }
+
         $this->info("{$dihapus} foto masuk kelas dihapus.");
 
         return self::SUCCESS;

@@ -12,7 +12,8 @@ use Illuminate\Support\Carbon;
  * Rekap masuk kelas per kelas untuk satu periode.
  *
  * Hari efektif = tanggal yang absen kelasnya berlaku dan batasnya sudah lewat,
- * memakai konfigurasi jam saat ini. Status tiap hari mengikuti absen pertama
+ * memakai konfigurasi jam saat ini, mulai dari hari absen kelas pertama kali
+ * dipakai di tahun ajaran ini. Status tiap hari mengikuti absen pertama
  * dan menit_terlambat yang tersimpan, sama seperti MasukKelasHariIni.
  */
 class RekapMasukKelas
@@ -36,8 +37,15 @@ class RekapMasukKelas
      */
     public function __invoke(Carbon $mulai, Carbon $selesai, ?int $kantorId = null): array
     {
-        $batas = array_filter(
-            JadwalKerja::batasMasukKelasPeriode($mulai, $selesai->copy()->min(Carbon::today())),
+        // Hari sebelum fitur dipakai bukan "kosong": tanpa batas awal ini, rekap
+        // pertama sesudah admin mengisi jam menghitung seluruh bulan lalu kosong.
+        $dipakaiSejak = AbsensiKelas::query()->min('tanggal');
+
+        $batas = $dipakaiSejak === null ? [] : array_filter(
+            JadwalKerja::batasMasukKelasPeriode(
+                $mulai->copy()->max(Carbon::parse((string) $dipakaiSejak)),
+                $selesai->copy()->min(Carbon::today()),
+            ),
             fn (CarbonImmutable $batas): bool => now()->greaterThanOrEqualTo($batas->addMinute()),
         );
 

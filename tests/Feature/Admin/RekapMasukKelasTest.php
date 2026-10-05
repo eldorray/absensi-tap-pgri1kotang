@@ -37,6 +37,8 @@ test('rekap per kelas menghitung tepat, telat, dan kosong pada hari efektif', fu
 });
 
 test('hari libur bukan hari efektif rekap per kelas', function () {
+    // Jangkar: fitur sudah dipakai sejak Jumat sebelumnya.
+    AbsensiKelas::factory()->create(['kelas_id' => $this->kelas->id, 'tanggal' => '2026-09-04']);
     HariLibur::factory()->create(['tanggal' => '2026-09-08']);
 
     $baris = app(RekapMasukKelas::class)(Carbon::parse('2026-09-07'), Carbon::parse('2026-09-08'))[0];
@@ -55,6 +57,8 @@ test('hari ini belum dihitung sebelum batasnya lewat', function () {
 });
 
 test('admin membuka tab rekap masuk kelas dan mengunduh CSV-nya', function () {
+    // Jangkar: fitur sudah dipakai sejak Jumat sebelumnya.
+    AbsensiKelas::factory()->create(['kelas_id' => $this->kelas->id, 'tanggal' => '2026-09-04']);
     $admin = User::factory()->admin()->create();
 
     $this->actingAs($admin)->get(route('admin.rekap.masuk-kelas', ['mode' => 'periode', 'mulai' => '2026-09-07', 'selesai' => '2026-09-09']))
@@ -74,4 +78,21 @@ test('admin membuka tab rekap masuk kelas dan mengunduh CSV-nya', function () {
 
 test('guru tidak boleh membuka rekap masuk kelas', function () {
     $this->actingAs(User::factory()->create())->get(route('admin.rekap.masuk-kelas'))->assertForbidden();
+});
+
+test('hari sebelum absen kelas pertama dipakai tidak dihitung kosong', function () {
+    AbsensiKelas::factory()->create(['kelas_id' => $this->kelas->id, 'tanggal' => '2026-09-08']);
+
+    $baris = app(RekapMasukKelas::class)(Carbon::parse('2026-09-01'), Carbon::parse('2026-09-09'))[0];
+
+    // Tanpa batas awal, 1-4 dan 7 September ikut dihitung kosong.
+    expect($baris['hari_efektif'])->toBe(2)
+        ->and(array_keys(array_column($baris['rincian'], 'status', 'tanggal')))->toBe(['2026-09-08', '2026-09-09']);
+});
+
+test('sebelum ada absen kelas sama sekali, rekap per kelas belum punya hari efektif', function () {
+    $baris = app(RekapMasukKelas::class)(Carbon::parse('2026-09-07'), Carbon::parse('2026-09-09'))[0];
+
+    expect($baris['hari_efektif'])->toBe(0)
+        ->and($baris['kosong'])->toBe(0);
 });

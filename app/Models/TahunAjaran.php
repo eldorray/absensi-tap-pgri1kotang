@@ -75,7 +75,7 @@ class TahunAjaran extends Model
 
         $baris = DB::table('jadwal_kerjas')
             ->where('tahun_ajaran_id', $tahunAjaranId)
-            ->get(['user_id', 'day_of_week', 'jam_masuk', 'jam_pulang', 'is_hari_kerja'])
+            ->get(['user_id', 'day_of_week', 'jam_masuk', 'jam_pulang', 'jam_masuk_kelas', 'is_hari_kerja'])
             ->map(fn (object $jadwal): array => [
                 ...(array) $jadwal,
                 'tahun_ajaran_id' => $this->id,

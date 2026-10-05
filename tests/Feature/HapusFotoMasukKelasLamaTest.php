@@ -48,3 +48,18 @@ test('scheduler menjalankan retensi foto', function () {
         ->expectsOutputToContain('masuk-kelas:hapus-foto-lama')
         ->assertSuccessful();
 });
+
+test('file foto yatim yang lebih tua dari 60 hari ikut dihapus', function () {
+    // Baris yang hilang lewat cascade (guru atau kelas dihapus) meninggalkan
+    // file tanpa baris; retensi tetap harus menyapunya.
+    $disk = Storage::disk('local');
+    $disk->put('absensi-kelas/2026/08/yatim.jpg', 'foto');
+    touch($disk->path('absensi-kelas/2026/08/yatim.jpg'), now()->subDays(61)->getTimestamp());
+    $disk->put('absensi-kelas/2026/10/baru.jpg', 'foto');
+    touch($disk->path('absensi-kelas/2026/10/baru.jpg'), now()->subDays(10)->getTimestamp());
+
+    $this->artisan('masuk-kelas:hapus-foto-lama')->assertSuccessful();
+
+    $disk->assertMissing('absensi-kelas/2026/08/yatim.jpg');
+    $disk->assertExists('absensi-kelas/2026/10/baru.jpg');
+});

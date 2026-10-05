@@ -213,3 +213,18 @@ test('mengaktifkan tahun yang sudah punya jadwal tidak menimpanya', function () 
 
     expect(JadwalKerja::withoutGlobalScopes()->where('tahun_ajaran_id', $baru->id)->count())->toBe(1);
 });
+
+test('mengaktifkan tahun baru ikut menyalin jam masuk kelas', function () {
+    $this->seed(JadwalKerjaSeeder::class);
+    JadwalKerja::query()->whereNull('user_id')->where('day_of_week', 1)->update(['jam_masuk_kelas' => '06:50:00']);
+    $baru = TahunAjaran::factory()->create(['nama' => '2027/2028']);
+
+    $this->actingAs(User::factory()->admin()->create())
+        ->post(route('admin.tahun-ajaran.aktifkan', $baru));
+
+    expect(JadwalKerja::withoutGlobalScopes()
+        ->where('tahun_ajaran_id', $baru->id)
+        ->whereNull('user_id')
+        ->where('day_of_week', 1)
+        ->value('jam_masuk_kelas'))->toBe('06:50:00');
+});
