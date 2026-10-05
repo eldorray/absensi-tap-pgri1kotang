@@ -80,7 +80,7 @@
     {#if masukKelas.absen}
         <p class="flex items-center gap-2 text-sm">
             <CircleCheck class="size-4" aria-hidden="true" />
-            Masuk kelas {masukKelas.absen.kelas} pukul {masukKelas.absen.jam}.
+            Masuk {masukKelas.absen.kelas} pukul {masukKelas.absen.jam}.
         </p>
     {:else if !masukKelas.sudahTapMasuk}
         <p class="text-sm">
@@ -113,7 +113,7 @@
     <DialogContent class="max-h-[90dvh] overflow-y-auto">
         <DialogTitle
             >{kelasDipilih
-                ? `Foto di kelas ${kelasDipilih.nama}`
+                ? `Foto di ${kelasDipilih.nama}`
                 : 'Pilih kelas'}</DialogTitle
         >
         {#if kelasDipilih === null}

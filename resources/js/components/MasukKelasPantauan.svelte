@@ -136,7 +136,7 @@
 
 <Dialog bind:open={terbuka}>
     <DialogContent class="max-h-[90dvh] overflow-y-auto">
-        <DialogTitle>Kelas {dilihat?.nama ?? ''}</DialogTitle>
+        <DialogTitle>{dilihat?.nama ?? ''}</DialogTitle>
         <ul class="mt-4 grid gap-4">
             {#each dilihat?.guru ?? [] as guru (guru.absensiKelasId)}
                 <li class="grid gap-2">
@@ -149,7 +149,7 @@
                     {#if guru.adaFoto}
                         <img
                             src={foto.url(guru.absensiKelasId)}
-                            alt="Foto {guru.nama} di kelas {dilihat?.nama}"
+                            alt="Foto {guru.nama} di {dilihat?.nama}"
                             loading="lazy"
                             class="w-full rounded-2xl"
                         />

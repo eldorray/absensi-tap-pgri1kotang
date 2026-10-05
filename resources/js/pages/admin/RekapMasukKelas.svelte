@@ -270,7 +270,7 @@
 
 <Dialog bind:open={terbuka}>
     <DialogContent class="max-h-[90dvh] overflow-y-auto">
-        <DialogTitle>Kelas {dilihat?.nama ?? ''}</DialogTitle>
+        <DialogTitle>{dilihat?.nama ?? ''}</DialogTitle>
         <ul class="mt-4 grid gap-3">
             {#each dilihat?.rincian ?? [] as hari (hari.tanggal)}
                 <li class="g-tile gap-2 px-4 py-3 {nada[hari.status]}">
@@ -292,7 +292,7 @@
                             {#if guru.adaFoto}
                                 <img
                                     src={foto.url(guru.absensiKelasId)}
-                                    alt="Foto {guru.nama} di kelas {dilihat?.nama}"
+                                    alt="Foto {guru.nama} di {dilihat?.nama}"
                                     loading="lazy"
                                     class="w-full rounded-2xl"
                                 />

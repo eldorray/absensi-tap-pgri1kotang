@@ -14,6 +14,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Inertia\Support\SessionKey;
 
 beforeEach(function () {
     // 2026-09-07 Senin. Batas masuk kelas 06.50 setiap hari.
@@ -228,4 +229,15 @@ test('beranda guru tanpa absen kelas hari ini', function () {
 
     $this->actingAs($guru)->get(route('dashboard'))
         ->assertInertia(fn ($page) => $page->where('masukKelas', null));
+});
+
+test('toast menyebut nama kelas apa adanya tanpa kata kelas ganda', function () {
+    Carbon::setTestNow('2026-09-07 06:52:00');
+    [$guru, $perangkat, $kelas] = guruSudahTapMasuk();
+    $kelas->update(['nama' => 'Kelas VII A']);
+
+    $this->actingAs($guru)->post(route('masuk-kelas.store'), payloadMasukKelas($perangkat, $kelas));
+
+    expect(session(SessionKey::FLASH_DATA)['toast']['message'])
+        ->toBe('Masuk Kelas VII A tercatat pukul 06.52. Telat 2 menit.');
 });

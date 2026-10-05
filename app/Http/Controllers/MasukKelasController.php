@@ -26,7 +26,7 @@ class MasukKelasController extends Controller
         );
 
         Inertia::flash('toast', ['type' => 'success', 'message' => sprintf(
-            'Masuk kelas %s tercatat pukul %s.%s',
+            'Masuk %s tercatat pukul %s.%s',
             $absen->kelas->nama,
             now()->format('H.i'),
             $absen->menit_terlambat > 0 ? " Telat {$absen->menit_terlambat} menit." : ' Tepat waktu.',
