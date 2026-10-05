@@ -33,3 +33,14 @@ test('permukaan rata dan gerak pegas papan absen', function () {
         // Morph sudut Material dibuang: kartu A diam saat disorot.
         ->not->toContain('border-radius: 56px 28px 56px 28px');
 });
+
+test('pegas gesture menghormati pengaturan kurangi gerak', function () {
+    $pegas = file_get_contents(resource_path('js/lib/pegas.ts'));
+
+    expect($pegas)
+        ->toContain('export function jalankan(')
+        ->toContain('export function proyeksi(')
+        ->toContain('export function karet(')
+        ->toContain('export function kurvaPegas(')
+        ->toContain("'(prefers-reduced-motion: reduce)'");
+});
