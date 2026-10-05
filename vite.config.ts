@@ -18,11 +18,14 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.ts'],
             refresh: true,
             fonts: [
-                google('Roboto Flex', {
-                    weights: [300, 400, 500, 700, 800],
+                google('Public Sans', {
+                    weights: [400, 500, 600, 700],
                 }),
-                google('Roboto Mono', {
-                    weights: [400, 500],
+                google('Bricolage Grotesque', {
+                    weights: [600, 700, 800],
+                }),
+                google('JetBrains Mono', {
+                    weights: [400, 600],
                 }),
             ],
         }),
