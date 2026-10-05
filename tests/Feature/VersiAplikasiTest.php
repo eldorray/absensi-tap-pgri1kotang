@@ -31,3 +31,9 @@ test('versi dan kredit F.A.K tampil di sidebar admin, sheet profil guru, dan hal
     expect(file_get_contents(resource_path('js/layouts/auth/AuthSimpleLayout.svelte')))
         ->toContain('<AppVersion class="mt-10" />');
 });
+
+test('versi bawaan aplikasi adalah 2.0', function () {
+    // Rilis desain papan absen dan API Android.
+    expect(file_get_contents(config_path('app.php')))
+        ->toContain("'version' => env('APP_VERSION', '2.0'),");
+});
