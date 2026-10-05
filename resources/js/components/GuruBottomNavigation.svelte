@@ -8,6 +8,7 @@
     import History from 'lucide-svelte/icons/history';
     import Megaphone from 'lucide-svelte/icons/megaphone';
     import UsersRound from 'lucide-svelte/icons/users-round';
+    import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
     import { pembacaBaru } from '@/lib/pengumuman';
     import { toUrl } from '@/lib/utils';
     import { dashboard } from '@/routes';
@@ -58,135 +59,175 @@
 
         return currentPath === href || currentPath.startsWith(`${href}/`);
     }
+
+    /**
+     * Slot yang ditandai pil: menu utama yang sedang dibuka, atau "Lainnya"
+     * saat sheet-nya terbuka atau halamannya ada di dalamnya. -1 = halaman di
+     * luar navigasi (mis. Profil): pil disembunyikan, bukan menunjuk slot salah.
+     */
+    const indeksPil = $derived.by(() => {
+        if (terbuka || lainnyaAktif) {
+            return 3;
+        }
+
+        return utama.findIndex((item) => isActive(toUrl(item.href)));
+    });
+
 </script>
 
-{#if terbuka}
-    <button
-        type="button"
-        aria-label="Tutup menu lainnya"
-        class="fixed inset-0 z-40 bg-black/20 backdrop-blur-[1px]"
-        onclick={() => (terbuka = false)}
-    ></button>
-
-    <section
-        class="fixed right-3 bottom-[calc(5rem+env(safe-area-inset-bottom))] left-3 z-50 mx-auto max-w-md rounded-[1.75rem] border border-border/80 bg-background p-2 shadow-[0_20px_60px_rgba(15,23,42,0.22)]"
-        aria-label="Menu lainnya"
+<Sheet bind:open={terbuka}>
+    <SheetContent
+        side="bottom"
+        class="inset-x-0 mx-auto h-fit max-h-[80svh] w-full max-w-lg gap-0 rounded-t-[1.25rem] border-x border-t border-border bg-popover/95 p-0 backdrop-blur-xl backdrop-saturate-150"
     >
-        <Link
-            href={toUrl(pengumumanIndex())}
-            onclick={() => (terbuka = false)}
-            class="flex min-h-14 items-center gap-3 rounded-2xl px-3 font-semibold {isActive(
-                toUrl(pengumumanIndex()),
-            )
-                ? 'bg-primary/10 text-primary'
-                : 'hover:bg-muted'}"
-        >
-            <span
-                class="relative grid size-10 place-items-center rounded-2xl bg-muted"
-                ><Megaphone
-                    class="size-5"
-                    aria-hidden="true"
-                />{#if adaPengumumanBaru}<span
-                        class="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-red-500 ring-2 ring-background"
-                    ></span>{/if}</span
+        <div data-tarik class="touch-none px-5 pt-3 pb-2">
+            <div
+                class="mx-auto h-1.5 w-10 rounded-full bg-muted-foreground/25"
+            ></div>
+            <SheetTitle class="mt-3 font-display text-xl font-bold"
+                >Lainnya</SheetTitle
             >
-            <span
-                >Pengumuman{#if adaPengumumanBaru}<span
-                        class="ml-2 rounded-full bg-primary px-2 py-0.5 text-[0.6875rem] font-bold text-primary-foreground"
-                        >Baru</span
-                    >{/if}<span
-                    class="block text-xs font-normal text-muted-foreground"
-                    >Informasi dari sekolah</span
-                ></span
-            >
-        </Link>
+        </div>
 
-        <Link
-            href={toUrl(jadwalIndex())}
-            onclick={() => (terbuka = false)}
-            class="flex min-h-14 items-center gap-3 rounded-2xl px-3 font-semibold {isActive(
-                toUrl(jadwalIndex()),
-            )
-                ? 'bg-primary/10 text-primary'
-                : 'hover:bg-muted'}"
+        <nav
+            aria-label="Menu lainnya"
+            class="grid gap-1 px-3 pb-3"
+            style="padding-bottom: max(1rem, env(safe-area-inset-bottom));"
         >
-            <span class="grid size-10 place-items-center rounded-2xl bg-muted"
-                ><CalendarClock class="size-5" aria-hidden="true" /></span
-            >
-            <span
-                >Jadwal<span
-                    class="block text-xs font-normal text-muted-foreground"
-                    >Jam masuk dan pulang</span
-                ></span
-            >
-        </Link>
-
-        {#if punyaKelas}
             <Link
-                href={toUrl(kelasSayaIndex())}
+                href={toUrl(pengumumanIndex())}
                 onclick={() => (terbuka = false)}
-                class="flex min-h-14 items-center gap-3 rounded-2xl px-3 font-semibold {isActive(
-                    toUrl(kelasSayaIndex()),
+                class="press flex min-h-14 items-center gap-3 rounded-lg px-3 font-semibold {isActive(
+                    toUrl(pengumumanIndex()),
                 )
-                    ? 'bg-primary/10 text-primary'
+                    ? 'bg-accent text-accent-foreground'
                     : 'hover:bg-muted'}"
             >
                 <span
-                    class="grid size-10 place-items-center rounded-2xl bg-muted"
-                    ><UsersRound class="size-5" aria-hidden="true" /></span
+                    class="relative grid size-10 place-items-center rounded-lg bg-muted"
+                    ><Megaphone
+                        class="size-5"
+                        aria-hidden="true"
+                    />{#if adaPengumumanBaru}<span
+                            class="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-[var(--g-amber)] ring-2 ring-background"
+                        ></span>{/if}</span
                 >
                 <span
-                    >Kelas Saya<span
+                    >Pengumuman{#if adaPengumumanBaru}<span
+                            class="ml-2 rounded-full bg-[var(--g-amber)] px-2 py-0.5 text-[0.6875rem] font-bold text-[var(--g-amber-ink)]"
+                            >Baru</span
+                        >{/if}<span
                         class="block text-xs font-normal text-muted-foreground"
-                        >Daftar kelas dan siswa</span
+                        >Informasi dari sekolah</span
                     ></span
                 >
             </Link>
+
             <Link
-                href={toUrl(absensiSiswaIndex())}
+                href={toUrl(jadwalIndex())}
                 onclick={() => (terbuka = false)}
-                class="flex min-h-14 items-center gap-3 rounded-2xl px-3 font-semibold {isActive(
-                    toUrl(absensiSiswaIndex()),
+                class="press flex min-h-14 items-center gap-3 rounded-lg px-3 font-semibold {isActive(
+                    toUrl(jadwalIndex()),
                 )
-                    ? 'bg-primary/10 text-primary'
+                    ? 'bg-accent text-accent-foreground'
                     : 'hover:bg-muted'}"
             >
                 <span
-                    class="grid size-10 place-items-center rounded-2xl bg-muted"
-                    ><ClipboardCheck class="size-5" aria-hidden="true" /></span
+                    class="grid size-10 place-items-center rounded-lg bg-muted"
+                    ><CalendarClock class="size-5" aria-hidden="true" /></span
                 >
                 <span
-                    >Absensi Siswa<span
+                    >Jadwal<span
                         class="block text-xs font-normal text-muted-foreground"
-                        >Lihat kehadiran kelas</span
+                        >Jam masuk dan pulang</span
                     ></span
                 >
             </Link>
-        {/if}
-    </section>
-{/if}
+
+            {#if punyaKelas}
+                <Link
+                    href={toUrl(kelasSayaIndex())}
+                    onclick={() => (terbuka = false)}
+                    class="press flex min-h-14 items-center gap-3 rounded-lg px-3 font-semibold {isActive(
+                        toUrl(kelasSayaIndex()),
+                    )
+                        ? 'bg-accent text-accent-foreground'
+                        : 'hover:bg-muted'}"
+                >
+                    <span
+                        class="grid size-10 place-items-center rounded-lg bg-muted"
+                        ><UsersRound class="size-5" aria-hidden="true" /></span
+                    >
+                    <span
+                        >Kelas Saya<span
+                            class="block text-xs font-normal text-muted-foreground"
+                            >Daftar kelas dan siswa</span
+                        ></span
+                    >
+                </Link>
+                <Link
+                    href={toUrl(absensiSiswaIndex())}
+                    onclick={() => (terbuka = false)}
+                    class="press flex min-h-14 items-center gap-3 rounded-lg px-3 font-semibold {isActive(
+                        toUrl(absensiSiswaIndex()),
+                    )
+                        ? 'bg-accent text-accent-foreground'
+                        : 'hover:bg-muted'}"
+                >
+                    <span
+                        class="grid size-10 place-items-center rounded-lg bg-muted"
+                        ><ClipboardCheck
+                            class="size-5"
+                            aria-hidden="true"
+                        /></span
+                    >
+                    <span
+                        >Absensi Siswa<span
+                            class="block text-xs font-normal text-muted-foreground"
+                            >Lihat kehadiran kelas</span
+                        ></span
+                    >
+                </Link>
+            {/if}
+        </nav>
+    </SheetContent>
+</Sheet>
 
 <nav
     aria-label="Navigasi utama guru"
-    class="fixed inset-x-0 bottom-0 z-50 border-t border-border/80 bg-background/95 px-2 pt-2 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl"
+    class="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/90 px-2 pt-1.5 backdrop-blur-xl backdrop-saturate-150"
     style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));"
 >
-    <div class="mx-auto grid max-w-lg grid-cols-4 gap-1">
-        {#each utama as item (item.label)}
+    <div class="relative mx-auto grid max-w-lg grid-cols-4">
+        <!-- Satu pil yang meluncur antar-slot, bukan latar per tombol. -->
+        <span
+            aria-hidden="true"
+            class="pointer-events-none absolute top-1 left-0 flex h-8 w-1/4 justify-center transition-[transform,opacity] duration-(--dur) ease-(--spring) {indeksPil <
+            0
+                ? 'opacity-0'
+                : ''}"
+            style="transform: translateX({Math.max(indeksPil, 0) * 100}%);"
+        >
+            <span class="h-8 w-14 rounded-full bg-accent"></span>
+        </span>
+
+        {#each utama as item, indeks (item.label)}
             {@const href = toUrl(item.href)}
+            {@const ditandai = indeksPil === indeks}
             <Link
                 {href}
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-1 text-[0.6875rem] font-semibold transition-colors {isActive(
-                    href,
-                )
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
+                class="press relative flex min-h-14 flex-col items-center gap-1 pt-1 text-[0.6875rem] font-semibold {ditandai
+                    ? 'text-accent-foreground'
+                    : 'text-muted-foreground hover:text-foreground'}"
                 aria-current={isActive(href) ? 'page' : undefined}
             >
-                <item.icon
-                    class="size-5"
-                    strokeWidth={isActive(href) ? 2.5 : 2}
-                />
+                <span class="grid h-8 w-14 place-items-center">
+                    <item.icon
+                        class="size-5"
+                        strokeWidth={ditandai ? 2.5 : 2}
+                        aria-hidden="true"
+                    />
+                </span>
                 <span>{item.label}</span>
             </Link>
         {/each}
@@ -197,20 +238,22 @@
                 ? 'Buka menu lainnya, ada pengumuman baru'
                 : 'Buka menu lainnya'}
             aria-expanded={terbuka}
-            onclick={() => (terbuka = !terbuka)}
-            class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-1 text-[0.6875rem] font-semibold transition-colors {terbuka ||
-            lainnyaAktif
-                ? 'bg-primary/10 text-primary'
-                : 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
+            aria-haspopup="dialog"
+            onclick={() => (terbuka = true)}
+            class="press relative flex min-h-14 flex-col items-center gap-1 pt-1 text-[0.6875rem] font-semibold {indeksPil ===
+            3
+                ? 'text-accent-foreground'
+                : 'text-muted-foreground hover:text-foreground'}"
         >
-            <span class="relative">
+            <span class="relative grid h-8 w-14 place-items-center">
                 <MoreHorizontal
                     class="size-5"
-                    strokeWidth={terbuka || lainnyaAktif ? 2.5 : 2}
+                    strokeWidth={indeksPil === 3 ? 2.5 : 2}
+                    aria-hidden="true"
                 />
                 {#if adaPengumumanBaru}
                     <span
-                        class="absolute -top-1 -right-1.5 size-2.5 rounded-full bg-red-500 ring-2 ring-background"
+                        class="absolute top-0.5 right-3 size-2.5 rounded-full bg-[var(--g-amber)] ring-2 ring-background"
                     ></span>
                 {/if}
             </span>

@@ -49,9 +49,9 @@
         <Toaster />
     </AppShell>
 {:else}
-    <div class="min-h-svh bg-muted/35 pb-24">
+    <div class="min-h-svh bg-background pb-24">
         <header
-            class="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-xl"
+            class="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-xl"
             style="padding-top: env(safe-area-inset-top);"
         >
             <div

@@ -76,3 +76,21 @@ test('sidebar admin gelap dengan badge kuning', function () {
         ->and($tombol)
         ->not->toContain('rounded-full p-2');
 });
+
+test('nav bawah memakai pil geser dan sheet lainnya', function () {
+    $guru = file_get_contents(resource_path('js/components/GuruBottomNavigation.svelte'));
+    $ortu = file_get_contents(resource_path('js/components/OrangTuaBottomNavigation.svelte'));
+
+    expect($guru)
+        ->toContain('const indeksPil = $derived')
+        // Di halaman menu Lainnya pil pindah ke slot ke-4.
+        ->toContain('lainnyaAktif) {')
+        ->toContain('<SheetContent')
+        ->toContain('side="bottom"')
+        ->toContain('data-tarik')
+        ->toContain('translateX(')
+        // Halaman di luar navigasi: pil disembunyikan.
+        ->toContain('opacity-0')
+        ->and($ortu)
+        ->toContain('translateX(');
+});

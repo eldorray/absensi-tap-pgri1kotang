@@ -10,28 +10,45 @@
         { label: 'Beranda', href: toUrl(dashboard()), icon: House },
         { label: 'Izin anak', href: toUrl(izinIndex()), icon: FileHeart },
     ];
+
+    const indeksPil = $derived(
+        items.findIndex((item) => page.url.split('?')[0] === item.href),
+    );
+
 </script>
 
 <nav
     aria-label="Navigasi utama orang tua"
-    class="fixed inset-x-0 bottom-0 z-50 border-t border-border/80 bg-background/95 px-3 pt-2 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl"
+    class="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/90 px-3 pt-1.5 backdrop-blur-xl backdrop-saturate-150"
     style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));"
 >
-    <div class="mx-auto grid max-w-lg grid-cols-2 gap-2">
-        {#each items as item (item.label)}
-            {@const aktif = page.url.split('?')[0] === item.href}
+    <div class="relative mx-auto grid max-w-lg grid-cols-2">
+        <span
+            aria-hidden="true"
+            class="pointer-events-none absolute top-1 left-0 flex h-8 w-1/2 justify-center transition-[transform,opacity] duration-(--dur) ease-(--spring) {indeksPil <
+            0
+                ? 'opacity-0'
+                : ''}"
+            style="transform: translateX({Math.max(indeksPil, 0) * 100}%);"
+        >
+            <span class="h-8 w-16 rounded-full bg-accent"></span>
+        </span>
+        {#each items as item, indeks (item.label)}
+            {@const aktif = indeksPil === indeks}
             <Link
                 href={item.href}
                 aria-current={aktif ? 'page' : undefined}
-                class="flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-4 text-xs font-bold transition-colors {aktif
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:bg-muted'}"
+                class="press relative flex min-h-14 flex-col items-center gap-1 pt-1 text-xs font-bold {aktif
+                    ? 'text-accent-foreground'
+                    : 'text-muted-foreground hover:text-foreground'}"
             >
-                <item.icon
-                    class="size-5"
-                    strokeWidth={aktif ? 2.5 : 2}
-                    aria-hidden="true"
-                />
+                <span class="grid h-8 w-16 place-items-center">
+                    <item.icon
+                        class="size-5"
+                        strokeWidth={aktif ? 2.5 : 2}
+                        aria-hidden="true"
+                    />
+                </span>
                 {item.label}
             </Link>
         {/each}
