@@ -78,14 +78,16 @@
             type="button"
             aria-pressed={o.nilai === nilai}
             onclick={() => (nilai = o.nilai)}
-            class="relative flex min-h-10 items-center justify-center gap-1.5 px-2 text-sm font-semibold whitespace-nowrap transition-colors {o.nilai ===
+            class="relative flex min-h-11 items-center justify-center gap-1.5 px-2 text-sm font-semibold whitespace-nowrap transition-colors {o.nilai ===
             nilai
                 ? 'text-foreground'
                 : 'text-muted-foreground hover:text-foreground'}"
         >
             {o.label}
             {#if o.jumlah !== undefined}
-                <span class="font-mono text-xs font-normal">{o.jumlah}</span>
+                <span class="hidden font-mono text-xs font-normal sm:inline"
+                    >{o.jumlah}</span
+                >
             {/if}
         </button>
     {/each}

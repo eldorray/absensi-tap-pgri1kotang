@@ -13,8 +13,10 @@
     import { flip } from 'svelte/animate';
     import { Tween } from 'svelte/motion';
     import { fly, slide } from 'svelte/transition';
+    import { toast } from 'svelte-sonner';
     import { updatePerangkat } from '@/actions/App/Http/Controllers/Admin/GuruController';
     import { update as reviewIzin } from '@/actions/App/Http/Controllers/Admin/IzinController';
+    import { lampiran } from '@/actions/App/Http/Controllers/IzinController';
     import AppHead from '@/components/AppHead.svelte';
     import KartuGeser from '@/components/KartuGeser.svelte';
     import MasukKelasPantauan from '@/components/MasukKelasPantauan.svelte';
@@ -60,6 +62,7 @@
         tanggal_mulai: string;
         tanggal_selesai: string;
         alasan: string;
+        ada_lampiran: boolean;
     };
 
     type PerangkatMenunggu = {
@@ -154,7 +157,7 @@
     const sudahTap = $derived(jumlah('hadir') + jumlah('terlambat'));
 
     const angka = new Tween(0, {
-        duration: geraknyaDikurangi() ? 0 : 900,
+        duration: () => (geraknyaDikurangi() ? 0 : 900),
         easing: kurvaPegas,
     });
 
@@ -306,33 +309,64 @@
     let kartuIzin = $state<Record<number, KartuGeser>>({});
     let kartuHp = $state<Record<number, KartuGeser>>({});
 
+    /**
+     * Kirim keputusan. Apa pun yang membuatnya tidak berhasil -- validasi,
+     * sesi kedaluwarsa (419), 403/500, jaringan, atau dibatalkan -- kartu
+     * kembali ke tempatnya supaya admin bisa mencoba lagi.
+     */
+    function kirimKeputusan(
+        url: string,
+        data: Record<string, string>,
+        kartu: () => KartuGeser | undefined,
+    ): void {
+        let berhasil = false;
+
+        router.patch(url, data, {
+            preserveScroll: true,
+            // Dua kartu yang diputuskan beruntun tidak saling membatalkan.
+            async: true,
+            onSuccess: () => {
+                berhasil = true;
+            },
+            onError: (errors) => {
+                toast.error(
+                    Object.values(errors)[0] ?? 'Keputusan belum tersimpan.',
+                );
+            },
+            onHttpException: () => {
+                toast.error(
+                    'Keputusan belum tersimpan. Muat ulang halaman lalu coba lagi.',
+                );
+
+                return false;
+            },
+            onFinish: () => {
+                if (!berhasil) {
+                    kartu()?.kembalikan();
+                }
+            },
+        });
+    }
+
     function putusIzin(id: number, keputusan: 'setujui' | 'tolak'): void {
-        router.patch(
+        kirimKeputusan(
             reviewIzin.url(id),
             {
                 status: keputusan === 'setujui' ? 'disetujui' : 'ditolak',
                 kembali: 'dashboard',
             },
-            {
-                preserveScroll: true,
-                onError: () => kartuIzin[id]?.kembalikan(),
-                onNetworkError: () => kartuIzin[id]?.kembalikan(),
-            },
+            () => kartuIzin[id],
         );
     }
 
     function putusHp(id: number, keputusan: 'setujui' | 'tolak'): void {
-        router.patch(
+        kirimKeputusan(
             updatePerangkat.url(id),
             {
                 status: keputusan === 'setujui' ? 'active' : 'revoked',
                 kembali: 'dashboard',
             },
-            {
-                preserveScroll: true,
-                onError: () => kartuHp[id]?.kembalikan(),
-                onNetworkError: () => kartuHp[id]?.kembalikan(),
-            },
+            () => kartuHp[id],
         );
     }
 
@@ -380,58 +414,72 @@
         class="muncul g-tile g-tone-plain flex-row flex-wrap items-center gap-x-10 gap-y-6"
         style="--i: 1"
     >
-        {#if wajib.length === 0}
+        {#if papanGuru.length === 0}
             <p class="text-muted-foreground">
                 Belum ada akun guru, jadi belum ada yang bisa direkap.
             </p>
         {:else}
             <div class="grid flex-[1_1_15rem] gap-1">
-                <h2
-                    id="judul-ringkasan"
-                    class="text-sm font-semibold text-muted-foreground"
-                >
-                    Sudah tap masuk
-                </h2>
-                <p
-                    class="font-display text-7xl leading-[0.95] font-extrabold tracking-tight tabular-nums"
-                >
-                    {Math.round(angka.current)}<span
-                        class="text-3xl font-semibold tracking-normal text-muted-foreground"
+                {#if wajib.length === 0}
+                    <h2
+                        id="judul-ringkasan"
+                        class="text-sm font-semibold text-muted-foreground"
                     >
-                        {` / ${wajib.length} guru`}</span
+                        Hari ini
+                    </h2>
+                    <p class="font-display text-3xl font-bold tracking-tight">
+                        Hari ini libur atau bukan hari kerja
+                    </p>
+                {:else}
+                    <h2
+                        id="judul-ringkasan"
+                        class="text-sm font-semibold text-muted-foreground"
                     >
-                </p>
+                        Sudah tap masuk
+                    </h2>
+                    <p
+                        class="font-display text-7xl leading-[0.95] font-extrabold tracking-tight tabular-nums"
+                    >
+                        {Math.round(angka.current)}<span
+                            class="text-3xl font-semibold tracking-normal text-muted-foreground"
+                        >
+                            {` / ${wajib.length} guru`}</span
+                        >
+                    </p>
+                {/if}
             </div>
 
             <div class="grid min-w-0 flex-[3_1_26rem] gap-3.5">
-                <div
-                    role="img"
-                    aria-label={segmen
-                        .map((s) => `${s.label} ${s.jumlah}`)
-                        .join(', ')}
-                    class="bilah flex h-7 gap-[3px] overflow-hidden rounded-md"
-                >
-                    {#each segmen.filter((s) => s.jumlah > 0) as s (s.kunci)}
-                        <span
-                            class="block rounded-[2px] {s.warna}"
-                            style="flex: {s.jumlah} 1 0;"
-                        ></span>
-                    {/each}
-                </div>
-                <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-                    {#each segmen as s (s.kunci)}
-                        <li
-                            class="flex items-center gap-2 {s.jumlah === 0
-                                ? 'text-muted-foreground'
-                                : ''}"
-                        >
-                            <span class="size-2.5 rounded-[2px] {s.warna}"
+                {#if wajib.length > 0}
+                    <div
+                        role="img"
+                        aria-label={segmen
+                            .map((s) => `${s.label} ${s.jumlah}`)
+                            .join(', ')}
+                        class="bilah flex h-7 gap-[3px] overflow-hidden rounded-md"
+                    >
+                        {#each segmen.filter((s) => s.jumlah > 0) as s (s.kunci)}
+                            <span
+                                class="block rounded-[2px] {s.warna}"
+                                style="flex: {s.jumlah} 1 0;"
                             ></span>
-                            {s.label}
-                            <b class="font-mono">{s.jumlah}</b>
-                        </li>
-                    {/each}
-                </ul>
+                        {/each}
+                    </div>
+                    <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                        {#each segmen as s (s.kunci)}
+                            <li
+                                class="flex items-center gap-2 {s.jumlah === 0
+                                    ? 'text-muted-foreground'
+                                    : ''}"
+                            >
+                                <span class="size-2.5 rounded-[2px] {s.warna}"
+                                ></span>
+                                {s.label}
+                                <b class="font-mono">{s.jumlah}</b>
+                            </li>
+                        {/each}
+                    </ul>
+                {/if}
                 <dl
                     class="flex flex-wrap gap-x-7 gap-y-1 border-t border-border pt-3.5 text-[0.8125rem] text-muted-foreground"
                 >
@@ -579,9 +627,20 @@
                             Izin guru · {labelTipeIzin[izin.tipe] ?? izin.tipe}
                         </p>
                         <h3 class="font-bold">{izin.nama}</h3>
-                        <p class="text-[0.8125rem] text-muted-foreground">
+                        <p
+                            class="line-clamp-2 text-[0.8125rem] text-muted-foreground"
+                        >
                             {rentang(izin)} · {izin.alasan}
                         </p>
+                        {#if izin.ada_lampiran}
+                            <a
+                                href={lampiran.url(izin.id)}
+                                target="_blank"
+                                rel="noopener"
+                                class="inline-flex min-h-11 items-center self-start text-sm font-semibold text-primary underline underline-offset-2"
+                                >Lihat lampiran</a
+                            >
+                        {/if}
                     </KartuGeser>
                 </div>
             {/each}

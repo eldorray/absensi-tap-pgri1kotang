@@ -253,7 +253,8 @@
         >
             {tanggalPanjang.format(new Date())}
         </p>
-        <p class="flex items-baseline gap-1.5" aria-label="Pukul {jam}">
+        <p class="flex items-baseline gap-1.5">
+            <span class="sr-only">Pukul {jam}</span>
             <span
                 class="font-display text-[clamp(4rem,22vw,5.5rem)] leading-[0.95] font-extrabold tracking-[-0.03em] tabular-nums"
                 aria-hidden="true">{bagianJam[0]}:{bagianJam[1]}</span

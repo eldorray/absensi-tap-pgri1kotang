@@ -15,8 +15,11 @@ export function pegas(x = 0): Pegas {
 }
 
 export function geraknyaDikurangi(): boolean {
+    // Juga dipanggil saat render di server (SSR), di mana window tidak ada.
     return (
-        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+        typeof window !== 'undefined' &&
+        (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ??
+            false)
     );
 }
 

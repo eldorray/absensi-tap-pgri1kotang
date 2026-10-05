@@ -83,11 +83,14 @@
             terbang ||
             tarikan ||
             event.button !== 0 ||
-            target?.closest('button')
+            target?.closest('button, a')
         ) {
             return;
         }
 
+        // Ditangkap sejak ditekan: tanpa ini, mouse yang dilepas di luar kartu
+        // meninggalkan tarikan menggantung yang ikut kursor tanpa tombol.
+        kartu?.setPointerCapture(event.pointerId);
         tarikan = {
             id: event.pointerId,
             awalX: event.clientX,
@@ -100,6 +103,14 @@
 
     function gerak(event: PointerEvent): void {
         if (!tarikan || event.pointerId !== tarikan.id || !kartu) {
+            return;
+        }
+
+        // Mouse tanpa tombol ditekan bukan tarikan, apa pun yang tercatat.
+        if (event.pointerType === 'mouse' && (event.buttons & 1) === 0) {
+            tarikan = null;
+            jalankan(p, 0, { damping: 1, response: 0.4 }, terapkan);
+
             return;
         }
 
@@ -121,7 +132,6 @@
             tarikan.aktif = true;
             hentikan(p);
             tarikan.acuan = event.clientX - p.x;
-            kartu.setPointerCapture(event.pointerId);
         }
 
         const mentah = event.clientX - tarikan.acuan;

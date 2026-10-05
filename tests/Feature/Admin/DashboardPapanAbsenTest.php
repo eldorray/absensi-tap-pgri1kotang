@@ -90,3 +90,15 @@ test('halaman dashboard admin memakai papan, kartu geser, dan segmen saring', fu
         ->toContain('kembalikan()')
         ->toContain('{#key saring}');
 });
+
+test('kartu izin dashboard menandai lampiran supaya bisa dicek sebelum disetujui', function () {
+    Izin::factory()->create(['lampiran_path' => 'izin/surat.pdf']);
+
+    $this->actingAs(User::factory()->admin()->create())
+        ->get(route('admin.dashboard'))
+        ->assertInertia(fn ($p) => $p->where('menungguPersetujuan.izin.0.ada_lampiran', true));
+
+    expect(file_get_contents(resource_path('js/pages/admin/Dashboard.svelte')))
+        ->toContain('lampiran.url(izin.id)')
+        ->toContain('line-clamp-2');
+});

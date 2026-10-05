@@ -38,9 +38,12 @@
 
     const close = () => setOpen(false);
 
-    const reduceMotion =
-        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ??
-        false;
+    // Dibaca saat transisi jalan, bukan saat komponen dibuat: komponen ini juga
+    // dirender di server (SSR), di mana window tidak ada.
+    const reduceMotion = (): boolean =>
+        typeof window !== 'undefined' &&
+        (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ??
+            false);
 
     // An ancestor with transform/filter/backdrop-filter becomes the containing
     // block for `position: fixed`, so the overlay must live on <body>.
@@ -65,7 +68,7 @@
         const jarak = side === 'left' || side === 'top' ? -ukuran : ukuran;
 
         return {
-            duration: reduceMotion ? 0 : keluar ? 380 : 520,
+            duration: reduceMotion() ? 0 : keluar ? 380 : 520,
             easing: kurvaPegas,
             css: (t: number) =>
                 `transform: ${dasar} translate${mendatar ? 'X' : 'Y'}(${(1 - t) * jarak}px)`,
@@ -82,7 +85,7 @@
             aria-label="Tutup"
             onclick={close}
             transition:fade={{
-                duration: reduceMotion ? 0 : 200,
+                duration: reduceMotion() ? 0 : 200,
             }}
         ></button>
         <div

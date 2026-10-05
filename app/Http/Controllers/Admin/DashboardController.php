@@ -105,7 +105,7 @@ class DashboardController extends Controller
      * Izin guru dan HP guru yang menunggu keputusan, terlama dulu.
      *
      * @return array{
-     *     izin: list<array{id: int, nama: string, tipe: string, tanggal_mulai: string, tanggal_selesai: string, alasan: string}>,
+     *     izin: list<array{id: int, nama: string, tipe: string, tanggal_mulai: string, tanggal_selesai: string, alasan: string, ada_lampiran: bool}>,
      *     perangkat: list<array{id: int, nama: string, label: string, diajukan: string|null}>
      * }
      */
@@ -124,6 +124,8 @@ class DashboardController extends Controller
                 'tanggal_mulai' => $izin->tanggal_mulai->toDateString(),
                 'tanggal_selesai' => $izin->tanggal_selesai->toDateString(),
                 'alasan' => $izin->alasan,
+                // Surat dokter dll. harus bisa dicek sebelum disetujui dari kartu.
+                'ada_lampiran' => $izin->lampiran_path !== null,
             ]);
 
         // Hanya HP guru, sama dengan hitungan perangkat_menunggu di atas.

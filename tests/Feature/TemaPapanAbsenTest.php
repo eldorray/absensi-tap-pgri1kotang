@@ -58,7 +58,7 @@ test('sheet bawah ditarik turun hanya dari pegangannya', function () {
         ->toContain('use:tarikTutup')
         ->toContain('easing: kurvaPegas')
         ->toContain("aktif: side === 'bottom'")
-        ->toContain('reduceMotion ? 0')
+        ->toContain('reduceMotion() ? 0')
         ->and($profil)
         ->toContain('data-tarik');
 });
@@ -190,7 +190,7 @@ test('kartu geser memutuskan lewat geser atau tombol', function () {
         ->toContain('karet(')
         ->toContain('export function kembalikan')
         // Tombol di dalam kartu tetap tombol: geser tidak dimulai dari sana.
-        ->toContain("closest('button')")
+        ->toContain("closest('button, a')")
         ->toContain("lempar('setujui')")
         ->toContain("lempar('tolak')");
 });
@@ -285,7 +285,7 @@ test('sisa temuan kecil review tahap 1-2 sudah dibereskan', function () {
         ->toContain('user-select: none;')
         ->toContain('--sidebar-primary-foreground: var(--g-on-blue);')
         ->and(file_get_contents(resource_path('js/components/ui/sheet/SheetContent.svelte')))
-        ->toContain('duration: reduceMotion ? 0 : 200')
+        ->toContain('duration: reduceMotion() ? 0 : 200')
         ->and(file_get_contents(resource_path('js/lib/pegas.ts')))
         ->toContain('Math.max(0, Math.min(0.064')
         ->and(file_get_contents(base_path('vite.config.ts')))
@@ -301,4 +301,47 @@ test('sisa temuan kecil review tahap 1-2 sudah dibereskan', function () {
         ->toContain('data-tarik')
         ->and(file_get_contents(resource_path('js/pages/orang-tua/Index.svelte')))
         ->toContain('data-tarik');
+});
+
+test('modul gerak aman dirender di server', function () {
+    expect(file_get_contents(resource_path('js/lib/pegas.ts')))
+        ->toContain("typeof window !== 'undefined'")
+        ->and(file_get_contents(resource_path('js/components/ui/sheet/SheetContent.svelte')))
+        // Dibaca saat transisi jalan, bukan saat komponen dibuat di server.
+        ->toContain('const reduceMotion = (): boolean =>')
+        ->and(file_get_contents(resource_path('js/pages/admin/Dashboard.svelte')))
+        ->toContain('duration: () => (geraknyaDikurangi() ? 0 : 900)');
+});
+
+test('dashboard admin hari libur tidak mengaku belum ada guru', function () {
+    expect(file_get_contents(resource_path('js/pages/admin/Dashboard.svelte')))
+        ->toContain('{#if papanGuru.length === 0}')
+        ->toContain('Hari ini libur atau bukan hari kerja');
+});
+
+test('kartu yang gagal dikirim selalu kembali ke tempatnya', function () {
+    expect(file_get_contents(resource_path('js/pages/admin/Dashboard.svelte')))
+        ->toContain('onHttpException')
+        ->toContain('onFinish: () => {')
+        ->toContain('if (!berhasil) {');
+});
+
+test('kartu geser tidak bisa tertarik tanpa tombol mouse ditekan', function () {
+    $kartu = file_get_contents(resource_path('js/components/KartuGeser.svelte'));
+    $turun = substr($kartu, strpos($kartu, 'function turun'), strpos($kartu, 'function gerak') - strpos($kartu, 'function turun'));
+
+    expect($turun)->toContain('setPointerCapture')
+        ->and($kartu)->toContain('(event.buttons & 1) === 0');
+});
+
+test('jam besar terbaca pembaca layar', function () {
+    expect(file_get_contents(resource_path('js/pages/Dashboard.svelte')))
+        ->toContain('<span class="sr-only">Pukul {jam}</span>')
+        ->not->toContain('aria-label="Pukul {jam}"');
+});
+
+test('segmen saring muat di layar ponsel dengan area sentuh 44px', function () {
+    expect(file_get_contents(resource_path('js/components/SegmenGeser.svelte')))
+        ->toContain('min-h-11')
+        ->toContain('hidden font-mono text-xs font-normal sm:inline');
 });
