@@ -741,7 +741,9 @@
                                 <Input
                                     id={`kelas-${j.day_of_week}`}
                                     type="time"
-                                    bind:value={jadwal.jadwals[i].jam_masuk_kelas}
+                                    bind:value={
+                                        jadwal.jadwals[i].jam_masuk_kelas
+                                    }
                                 />
                             </div>
                         </div>

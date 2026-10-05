@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Absensi\CatatAbsensi;
+use App\Actions\Absensi\MasukKelasHariIni;
 use App\Enums\StatusAbsensi;
 use App\Enums\TipeTap;
 use App\Http\Requests\CatatAbsensiRequest;
 use App\Models\Absensi;
+use App\Models\AbsensiKelas;
 use App\Models\HariLibur;
 use App\Models\JadwalKerja;
 use App\Models\Lokasi;
 use App\Models\PengaturanAbsensi;
 use App\Models\Pengumuman;
 use App\Models\Perangkat;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -24,7 +27,7 @@ class AbsensiController extends Controller
     /**
      * Halaman tap milik guru: jadwal dan status hari ini.
      */
-    public function index(Request $request): Response
+    public function index(Request $request, MasukKelasHariIni $masukKelasHariIni): Response
     {
         $guru = $request->user();
 
@@ -63,6 +66,7 @@ class AbsensiController extends Controller
             // dengan yang dinilai server walau jam HP meleset.
             'waktuServer' => now()->toIso8601String(),
             'libur' => HariLibur::query()->whereDate('tanggal', today())->value('nama'),
+            'masukKelas' => $this->masukKelas($guru, $hariIni, $masukKelasHariIni),
             'pengumumans' => Pengumuman::query()
                 ->where('is_active', true)
                 ->latest()
@@ -106,6 +110,47 @@ class AbsensiController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => $this->pesanTercatat($absensi, $request->string('tipe')->toString())]);
 
         return to_route('dashboard');
+    }
+
+    /**
+     * Kartu masuk kelas di beranda: batasnya, absen guru ini kalau sudah, dan
+     * kelas di unitnya beserta guru yang sudah mengisinya.
+     *
+     * @return array{
+     *     batas: string,
+     *     sudahTapMasuk: bool,
+     *     absen: array{kelas: string, jam: string, menitTerlambat: int}|null,
+     *     kelas: list<array{id: int, nama: string, terisiOleh: list<string>}>
+     * }|null
+     */
+    private function masukKelas(User $guru, ?Absensi $hariIni, MasukKelasHariIni $masukKelasHariIni): ?array
+    {
+        $keadaan = $masukKelasHariIni($guru->kantor_id);
+
+        if ($keadaan === null) {
+            return null;
+        }
+
+        $absen = AbsensiKelas::query()
+            ->with('kelas:id,nama')
+            ->where('user_id', $guru->id)
+            ->whereDate('tanggal', today())
+            ->first();
+
+        return [
+            'batas' => $keadaan['batas'],
+            'sudahTapMasuk' => $hariIni?->masuk_attempt_id !== null,
+            'absen' => $absen === null ? null : [
+                'kelas' => $absen->kelas->nama,
+                'jam' => $absen->created_at?->format('H:i') ?? '',
+                'menitTerlambat' => $absen->menit_terlambat,
+            ],
+            'kelas' => array_map(fn (array $kelas): array => [
+                'id' => $kelas['id'],
+                'nama' => $kelas['nama'],
+                'terisiOleh' => array_column($kelas['guru'], 'nama'),
+            ], $keadaan['kelas']),
+        ];
     }
 
     /**

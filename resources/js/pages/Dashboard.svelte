@@ -25,6 +25,8 @@
     import AppHead from '@/components/AppHead.svelte';
     import InstallPrompt from '@/components/InstallPrompt.svelte';
     import JarakLokasi from '@/components/JarakLokasi.svelte';
+    import MasukKelasKartu from '@/components/MasukKelasKartu.svelte';
+    import type { MasukKelas } from '@/components/MasukKelasKartu.svelte';
     import PengumumanDetail from '@/components/PengumumanDetail.svelte';
     import PengumumanKartu from '@/components/PengumumanKartu.svelte';
     import TapButton from '@/components/TapButton.svelte';
@@ -77,6 +79,7 @@
         statusPerangkat = null,
         waktuServer,
         libur = null,
+        masukKelas = null,
     }: {
         jadwal: Jadwal | null;
         hariIni: Hari | null;
@@ -87,6 +90,7 @@
         statusPerangkat?: 'pending' | 'active' | 'revoked' | null;
         waktuServer: string;
         libur?: string | null;
+        masukKelas?: MasukKelas | null;
     } = $props();
 
     // Dashboard hanya membaca penanda "Baru"; yang menandai terbaca adalah
@@ -362,6 +366,10 @@
                 halaman.
             </p>
         {/if}
+    {/if}
+
+    {#if masukKelas}
+        <MasukKelasKartu {masukKelas} {deviceUuid} {menitServer} />
     {/if}
 
     {#if pengumumans.length > 0}

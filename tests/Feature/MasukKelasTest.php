@@ -186,3 +186,46 @@ test('orang tua tidak bisa absen masuk kelas', function () {
         ->post(route('masuk-kelas.store'), [])
         ->assertForbidden();
 });
+
+test('beranda guru membawa keadaan masuk kelas hari ini', function () {
+    [$guru, , $kelas] = guruSudahTapMasuk();
+    AbsensiKelas::factory()->create([
+        'kelas_id' => $kelas->id,
+        'user_id' => User::factory()->create(['name' => 'Pak Budi'])->id,
+    ]);
+
+    $this->actingAs($guru)->get(route('dashboard'))
+        ->assertInertia(fn ($page) => $page
+            ->where('masukKelas.batas', '06:50')
+            ->where('masukKelas.sudahTapMasuk', true)
+            ->where('masukKelas.absen', null)
+            ->where('masukKelas.kelas.0.nama', '7A')
+            ->where('masukKelas.kelas.0.terisiOleh', ['Pak Budi']));
+});
+
+test('beranda guru menampilkan absen kelasnya sendiri', function () {
+    Carbon::setTestNow('2026-09-07 06:53:00');
+    [$guru, , $kelas] = guruSudahTapMasuk();
+    AbsensiKelas::factory()->telat(3)->create(['kelas_id' => $kelas->id, 'user_id' => $guru->id]);
+
+    $this->actingAs($guru)->get(route('dashboard'))
+        ->assertInertia(fn ($page) => $page
+            ->where('masukKelas.absen', ['kelas' => '7A', 'jam' => '06:53', 'menitTerlambat' => 3]));
+});
+
+test('unit tanpa kelas aktif mengirim daftar kelas kosong', function () {
+    $guru = User::factory()->create(['kantor_id' => Kantor::factory()->create()->id]);
+
+    $this->actingAs($guru)->get(route('dashboard'))
+        ->assertInertia(fn ($page) => $page
+            ->where('masukKelas.sudahTapMasuk', false)
+            ->where('masukKelas.kelas', []));
+});
+
+test('beranda guru tanpa absen kelas hari ini', function () {
+    JadwalKerja::query()->whereNull('user_id')->update(['jam_masuk_kelas' => null]);
+    [$guru] = guruSudahTapMasuk();
+
+    $this->actingAs($guru)->get(route('dashboard'))
+        ->assertInertia(fn ($page) => $page->where('masukKelas', null));
+});
