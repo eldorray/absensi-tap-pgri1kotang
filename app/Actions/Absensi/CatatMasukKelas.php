@@ -79,6 +79,21 @@ class CatatMasukKelas
             $this->tolak('Sudah absen masuk kelas hari ini.');
         }
 
+        // Satu kelas satu guru: yang pertama absen yang menang.
+        // ponytail: cek aplikasi, bukan unique(kelas_id, tanggal). Data lama
+        // sudah punya kelas berguru ganda (migrasi unique akan gagal). Dua
+        // kiriman nyaris bersamaan ke kelas yang sama masih bisa lolos keduanya;
+        // kalau itu terjadi, lockForUpdate baris kelas di dalam transaksi.
+        $pengisi = AbsensiKelas::query()
+            ->with('user:id,name')
+            ->where('kelas_id', $kelas->id)
+            ->whereDate('tanggal', today())
+            ->first();
+
+        if ($pengisi !== null) {
+            $this->tolak("{$kelas->nama} sudah diisi {$pengisi->user->name}. Pilih kelas lain.");
+        }
+
         $path = $foto->store('absensi-kelas/'.now()->format('Y/m'), self::DISK);
 
         if ($path === false) {

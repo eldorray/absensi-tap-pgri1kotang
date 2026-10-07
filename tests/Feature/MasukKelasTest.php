@@ -126,6 +126,21 @@ test('absen kelas kedua di hari yang sama ditolak', function () {
         ->and(Storage::disk('local')->allFiles())->toHaveCount(1);
 });
 
+test('kelas yang sudah diisi guru lain ditolak tanpa menyimpan foto', function () {
+    [$guru, $perangkat, $kelas] = guruSudahTapMasuk();
+    AbsensiKelas::factory()->create([
+        'kelas_id' => $kelas->id,
+        'user_id' => User::factory()->create(['name' => 'Pak Budi'])->id,
+    ]);
+
+    $this->actingAs($guru)
+        ->post(route('masuk-kelas.store'), payloadMasukKelas($perangkat, $kelas))
+        ->assertSessionHasErrors(['masuk_kelas' => '7A sudah diisi Pak Budi. Pilih kelas lain.']);
+
+    expect(AbsensiKelas::count())->toBe(1)
+        ->and(Storage::disk('local')->allFiles())->toBe([]);
+});
+
 test('hari tanpa jam masuk kelas ditolak', function () {
     JadwalKerja::query()->whereNull('user_id')->update(['jam_masuk_kelas' => null]);
     [$guru, $perangkat, $kelas] = guruSudahTapMasuk();
@@ -240,4 +255,9 @@ test('toast menyebut nama kelas apa adanya tanpa kata kelas ganda', function () 
 
     expect(session(SessionKey::FLASH_DATA)['toast']['message'])
         ->toBe('Masuk Kelas VII A tercatat pukul 06.52. Telat 2 menit.');
+});
+
+test('kelas yang sudah diisi tidak bisa dipilih di beranda guru', function () {
+    expect(file_get_contents(resource_path('js/components/MasukKelasKartu.svelte')))
+        ->toContain('disabled={kelas.terisiOleh.length > 0}');
 });

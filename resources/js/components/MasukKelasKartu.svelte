@@ -95,13 +95,14 @@
                     <li>
                         <button
                             type="button"
-                            class="flex min-h-11 w-full flex-wrap items-center justify-between gap-2 rounded-2xl border border-border px-4 py-2 text-left hover:bg-muted"
+                            class="flex min-h-11 w-full flex-wrap items-center justify-between gap-2 rounded-2xl border border-border px-4 py-2 text-left hover:bg-muted disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-60"
+                            disabled={kelas.terisiOleh.length > 0}
                             onclick={() => (kelasDipilih = kelas)}
                         >
                             <span class="font-semibold">{kelas.nama}</span>
                             {#if kelas.terisiOleh.length > 0}
                                 <span class="text-xs text-muted-foreground"
-                                    >sudah ada {kelas.terisiOleh.join(
+                                    >sudah diisi {kelas.terisiOleh.join(
                                         ', ',
                                     )}</span
                                 >
